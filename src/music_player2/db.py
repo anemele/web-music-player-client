@@ -4,10 +4,10 @@ import time
 from dataclasses import asdict, dataclass
 from itertools import chain, starmap
 from pathlib import Path
-from typing import Iterable, List
+from typing import Iterable
 
 from mashumaro.mixins.orjson import DataClassORJSONMixin
-from tinytag import TinyTag  # type: ignore
+from tinytag import TinyTag
 
 from .cache import CACHE_PATH
 
@@ -32,7 +32,7 @@ class MusicItem:
 
 @dataclass
 class MusicData(DataClassORJSONMixin):
-    music: List[MusicItem]
+    music: list[MusicItem]
     expire: float
 
 
