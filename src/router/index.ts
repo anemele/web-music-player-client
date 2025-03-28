@@ -6,16 +6,9 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     {
-      path: "/music",
+      path: "/",
       component: Music,
     },
-    {
-      path: "/",
-      redirect: "/music",
-    },
-    // {
-    //     path: '/music/:id'
-    // }
   ],
 });
 

@@ -1,13 +1,15 @@
 import axios from "axios";
 
+const ApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export const request = axios.create({
-  // baseURL: 'http://localhost:3000',
+  baseURL: ApiBaseUrl
 });
 
 export function getMusicList() {
-  return request.get("/musiclist");
+  return request.get("/list");
 }
 
 export function getMusic(id: number) {
-  return ("/music/" + id);
+  return (ApiBaseUrl + "/music/" + id);
 }

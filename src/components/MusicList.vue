@@ -28,10 +28,14 @@ let items = reactive<ItemInter[]>([])
 // 如何设置后端 url？硬编码不是个好方法。
 
 
-onMounted(() => setTimeout(() => {
-    getMusicList().then((res) => {
-        res.data.forEach((it: ItemInter) => items.push(it))
-    })
+onMounted(() => setTimeout(async () => {
+    let res = await getMusicList();
+    if (res.data === null) {
+        alert('server error')
+        return
+    }
+
+    res.data.forEach((it: ItemInter) => items.push(it))
 }, 50))
 
 let isActive = ref(-1)
