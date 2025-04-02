@@ -9,15 +9,13 @@
 import { emitter, Events } from "@/tools/emit";
 
 function locateCurrent() {
-    document.querySelector(".current")?.scrollIntoView(true);
+    document.querySelector(".current")?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+    });
 }
 
-emitter.on(Events.locateCurrent, () => {
-    // 此处要加一个延时，否则 class 变化太慢，事件响应太快，导致显示不一致。
-    setTimeout(() => {
-        locateCurrent()
-    }, 1);
-})
+emitter.on(Events.locateCurrent, locateCurrent)
 
 </script>
 
