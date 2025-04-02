@@ -15,8 +15,10 @@ function locateCurrent() {
     });
 }
 
-emitter.on(Events.locateCurrent, locateCurrent)
-
+emitter.on(Events.locateCurrent, function () {
+    // 此处要加一个延时，否则 class 变化太慢，事件响应太快，导致显示不一致。
+    setTimeout(locateCurrent, 100); // 100ms 后执行 locateCurrent
+})
 </script>
 
 <style scoped>
