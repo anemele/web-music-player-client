@@ -1,6 +1,6 @@
 <template>
     <div>
-        <li class="item" v-for="(item, index) in items" :key="item.id" @click="selectMusic(index)"
+        <li class="item" v-for="(item, index) in items" :key="item.id" @click="selectMusic(index, item.id)"
             :class="{ current: isActive === index }">
             <MusicItem :item="item" :index="index" />
         </li>
@@ -16,17 +16,6 @@ import { type ItemInter } from './inter'
 import { getMusic, getMusicList } from "@/api";
 
 let items = reactive<ItemInter[]>([])
-// for (let i = 0; i < 100; i++) {
-//     items.push({
-//         id: i,
-//         title: "Love Story",
-//         artist: "Taylor Swift", album: "1989", duration: "3:21",
-//     })
-// }
-
-// TODO
-// 如何设置后端 url？硬编码不是个好方法。
-
 
 onMounted(() => setTimeout(async () => {
     let res = await getMusicList();
@@ -39,10 +28,10 @@ onMounted(() => setTimeout(async () => {
 }, 50))
 
 let isActive = ref(-1)
-function selectMusic(id: number) {
-    if (isActive.value === id) { return }
+function selectMusic(idx: number, id: number) {
+    if (isActive.value === idx) { return }
+    isActive.value = idx;
 
-    isActive.value = id;
     emitter.emit(Events.sendMusic, getMusic(id))
     emitter.emit(Events.locateCurrent)
 }

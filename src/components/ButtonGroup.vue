@@ -9,8 +9,7 @@
 import { emitter, Events } from "@/tools/emit";
 
 function locateCurrent() {
-    let current = document.querySelector(".current");
-    if (current !== null) { current.scrollIntoView(true); }
+    document.querySelector(".current")?.scrollIntoView(true);
 }
 
 emitter.on(Events.locateCurrent, () => {

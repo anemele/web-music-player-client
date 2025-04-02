@@ -1,5 +1,6 @@
 <template>
-    <div class="index"><span>{{ index + 1 }}</span>
+    <div class="index">
+        <span>{{ index + 1 }}</span>
         <i></i>
     </div>
     <div class="content">
