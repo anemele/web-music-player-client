@@ -15,7 +15,15 @@ import { type ItemInter } from './inter'
 
 import { getMusic, getMusicList } from "@/api";
 
-let items = reactive<ItemInter[]>([])
+let items = reactive<ItemInter[]>([
+    {
+        id: 1,
+        title: 'Title 1',
+        artist: 'Artist 1',
+        album: 'Album 1',
+        duration: '1:23',
+    }
+])
 
 onMounted(() => setTimeout(async () => {
     let res = await getMusicList();
@@ -24,6 +32,7 @@ onMounted(() => setTimeout(async () => {
         return
     }
 
+    items.pop()
     res.data.forEach((it: ItemInter) => items.push(it))
 }, 50))
 
