@@ -1,6 +1,6 @@
 <template>
     <div>
-        <li class="item" v-for="(item, index) in items" :key="item.id" @click="selectMusic(index, item.id)"
+        <li class="item" v-for="(item, index) in items" :key="item.id" @click="selectMusic(index)"
             :class="{ current: isActive === index }">
             <MusicItem :item="item" :index="index" />
         </li>
@@ -28,11 +28,10 @@ onMounted(() => setTimeout(async () => {
 }, 50))
 
 let isActive = ref(-1)
-function selectMusic(idx: number, id: number) {
+function selectMusic(idx: number) {
     if (isActive.value === idx) { return }
     isActive.value = idx;
-
-    emitter.emit(Events.sendMusic, getMusic(id))
+    emitter.emit(Events.sendMusic, getMusic(items[idx].id))
     emitter.emit(Events.locateCurrent)
 }
 
