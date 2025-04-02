@@ -1,5 +1,5 @@
 {
-  "name": "player",
+  "name": "web-music-player",
   "version": "0.0.1",
   "private": true,
   "type": "module",
