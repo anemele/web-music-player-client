@@ -15,6 +15,7 @@ import { type ItemInter } from './inter'
 
 import { getMusic, getMusicList } from "@/api";
 
+// 此处设置默认数据，防止后端服务器未开启导致页面空白
 let items = reactive<ItemInter[]>([
     {
         id: 1,
@@ -31,7 +32,11 @@ onMounted(() => setTimeout(async () => {
         alert('server error')
         return
     }
-
+    if (res.data.length === 0) {
+        alert('no music')
+        return
+    }
+    // 移除默认数据
     items.pop()
     res.data.forEach((it: ItemInter) => items.push(it))
 }, 50))
@@ -40,6 +45,7 @@ let isActive = ref(-1)
 function selectMusic(idx: number) {
     if (isActive.value === idx) { return }
     isActive.value = idx;
+    document.title = items[idx].title + ' - ' + items[idx].artist
     emitter.emit(Events.sendMusic, getMusic(items[idx].id))
     emitter.emit(Events.locateCurrent)
 }
