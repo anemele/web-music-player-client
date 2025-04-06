@@ -1,9 +1,3 @@
-<template>
-    <div class="btnGrp">
-        <button @click="locateCurrent">+</button>
-    </div>
-</template>
-
 <script lang="ts" setup>
 import { emitter, Events } from "@/tools/emit";
 
@@ -19,6 +13,12 @@ emitter.on(Events.locateCurrent, function () {
     setTimeout(locateCurrent, 100); // 100ms 后执行 locateCurrent
 })
 </script>
+
+<template>
+    <div class="btnGrp">
+        <button @click="locateCurrent">+</button>
+    </div>
+</template>
 
 <style scoped>
 .btnGrp {

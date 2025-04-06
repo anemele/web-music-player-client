@@ -1,3 +1,10 @@
+<script lang="ts" setup>
+import { type ItemInter } from './inter'
+import { convertSecondToTime } from '@/tools/utils';
+
+defineProps<{ item: ItemInter, index: number }>()
+</script>
+
 <template>
     <div class="index">
         <span>{{ index + 1 }}</span>
@@ -9,13 +16,6 @@
     </div>
     <div class="duration">{{ convertSecondToTime(item.duration) }}</div>
 </template>
-
-<script lang="ts" setup>
-import { type ItemInter } from './inter'
-import { convertSecondToTime } from '@/tools/utils';
-
-defineProps<{ item: ItemInter, index: number }>()
-</script>
 
 <style scoped>
 .index {

@@ -1,3 +1,63 @@
+<script lang="ts" setup>
+import { getMusic } from "@/api";
+import { emitter, Events } from "@/tools/emit";
+import { convertSecondToTime } from "@/tools/utils";
+import { ref } from "vue";
+import { type ItemInter } from "./inter";
+
+const player = new Audio()
+
+emitter.on(Events.sendMusic, (e) => {
+    // 此处类型检查不过，使用断言改变类型
+    // 虽然不很美观，但是可以通过类型检查
+    const music = e as ItemInter
+    player.src = getMusic(music.id)
+    current.value = 0
+    duration.value = music.duration
+    // 使用 source 标签后要 load 否则无法播放
+    // 改用 Audio 对象之后不要 load 否则会有重音
+    // player.load()
+    if (player.paused) { player.play() }
+})
+
+function playAndPause() {
+    player.paused ? player.play() : player.pause()
+}
+
+let current = ref(0)
+let duration = ref(123)
+
+function changeCurrentTime(event: MouseEvent) {
+    // 用选择器获取目标，不要用 event ，因为 event 可能是冒泡事件
+    const progressContrainer = document.querySelector('.progress-container')
+    // 获取进度条容器宽度，此处应该不会为 undefined
+    const width = progressContrainer?.clientWidth;
+    // console.log(width)
+    if (width === undefined) {
+        alert('Internal error: progress container width is undefined')
+        return
+    }
+    // 获取点击位置相对于进度条容器左侧的距离
+    const clickX = event.offsetX;
+    // console.log(clickX)
+    current.value = (clickX / width) * duration.value;
+    // 设置当前播放时间
+    player.currentTime = current.value
+}
+
+player.ontimeupdate = function () {
+    current.value = player.currentTime
+}
+
+player.onended = function () {
+    emitter.emit(Events.nextMusic)
+}
+
+function TODO() {
+    alert('TODO')
+}
+</script>
+
 <template>
     <div class="player-bar">
         <!-- <audio ref="player" controls autoplay @ended="emitter.emit(Events.nextMusic)"> -->
@@ -35,67 +95,6 @@
         </div>
     </div>
 </template>
-
-<script lang="ts" setup>
-    import { ref } from "vue";
-    import { emitter, Events } from "@/tools/emit";
-    import { convertSecondToTime } from "@/tools/utils";
-    import { type ItemInter } from "./inter";
-    import { getMusic } from "@/api";
-
-    const player = new Audio()
-
-    emitter.on(Events.sendMusic, (e) => {
-        // 此处类型检查不过，使用断言改变类型
-        // 虽然不很美观，但是可以通过类型检查
-        const music = e as ItemInter
-        player.src = getMusic(music.id)
-        current.value = 0
-        duration.value = music.duration
-        // 使用 source 标签后要 load 否则无法播放
-        // 改用 Audio 对象之后不要 load 否则会有重音
-        // player.load()
-        if (player.paused) { player.play() }
-    })
-
-    function playAndPause() {
-        player.paused ? player.play() : player.pause()
-    }
-
-    let current = ref(0)
-    let duration = ref(123)
-
-    function changeCurrentTime(event: MouseEvent) {
-        // 用选择器获取目标，不要用 event ，因为 event 可能是冒泡事件
-        const progressContrainer = document.querySelector('.progress-container')
-        // 获取进度条容器宽度，此处应该不会为 undefined
-        const width = progressContrainer?.clientWidth;
-        // console.log(width)
-        if (width === undefined) {
-            alert('Internal error: progress container width is undefined')
-            return
-        }
-        // 获取点击位置相对于进度条容器左侧的距离
-        const clickX = event.offsetX;
-        // console.log(clickX)
-        current.value = (clickX / width) * duration.value;
-        // 设置当前播放时间
-        player.currentTime = current.value
-    }
-
-    player.ontimeupdate = function () {
-        current.value = player.currentTime
-    }
-
-    player.onended = function () {
-        emitter.emit(Events.nextMusic)
-    }
-
-    function TODO() {
-        alert('TODO')
-    }
-
-</script>
 
 <style scoped>
     .player-bar {

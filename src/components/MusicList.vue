@@ -1,19 +1,10 @@
-<template>
-    <div>
-        <li class="item" v-for="(item, index) in items" :key="item.id" @click="selectMusic(index)"
-            :class="{ current: isActive === index }">
-            <MusicItem :item="item" :index="index" />
-        </li>
-    </div>
-</template>
-
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from 'vue';
-import MusicItem from './MusicItem.vue';
 import { Events, emitter } from '@/tools/emit';
-import { type ItemInter } from './inter'
+import { onMounted, reactive, ref } from 'vue';
+import { type ItemInter } from './inter';
+import MusicItem from './MusicItem.vue';
 
-import { getMusic, getMusicList } from "@/api";
+import { getMusicList } from "@/api";
 
 // 此处设置默认数据，防止后端服务器未开启导致页面空白
 let items = reactive<ItemInter[]>([
@@ -57,7 +48,16 @@ emitter.on(Events.nextMusic, () => { selectMusic(randMusic()) })
 
 </script>
 
-<style>
+<template>
+    <div>
+        <li class="item" v-for="(item, index) in items" :key="item.id" @click="selectMusic(index)"
+            :class="{ current: isActive === index }">
+            <MusicItem :item="item" :index="index" />
+        </li>
+    </div>
+</template>
+
+<style scoped>
 li.current {
     background-color: #dddd;
 }
