@@ -46,7 +46,7 @@ function selectMusic(idx: number) {
     if (isActive.value === idx) { return }
     isActive.value = idx;
     document.title = items[idx].title + ' - ' + items[idx].artist
-    emitter.emit(Events.sendMusic, getMusic(items[idx].id))
+    emitter.emit(Events.sendMusic, items[idx])
     emitter.emit(Events.locateCurrent)
 }
 

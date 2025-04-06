@@ -7,16 +7,15 @@
         <div class="name">{{ item.title }}</div>
         <div class="album">{{ item.artist }} - {{ item.album }}</div>
     </div>
-    <div class="duration">{{ item.duration }}</div>
+    <div class="duration">{{ convertSecondToTime(item.duration) }}</div>
 </template>
 
 <script lang="ts" setup>
 import { type ItemInter } from './inter'
+import { convertSecondToTime } from '@/tools/utils';
 
 defineProps<{ item: ItemInter, index: number }>()
-
 </script>
-
 
 <style scoped>
 .index {

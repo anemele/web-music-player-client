@@ -1,7 +1,6 @@
 <template>
     <div class="btnGrp">
         <button @click="locateCurrent">+</button>
-        <button @click="emitter.emit(Events.nextMusic)">></button>
     </div>
 </template>
 
@@ -26,7 +25,7 @@ emitter.on(Events.locateCurrent, function () {
     display: flex;
     flex-flow: column;
     position: fixed;
-    bottom: 90px;
+    bottom: 120px;
     right: 30px;
 }
 
