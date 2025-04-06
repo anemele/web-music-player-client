@@ -45,7 +45,10 @@
 
     const player = new Audio()
 
-    emitter.on(Events.sendMusic, (music: ItemInter) => {
+    emitter.on(Events.sendMusic, (e) => {
+        // 此处类型检查不过，使用断言改变类型
+        // 虽然不很美观，但是可以通过类型检查
+        const music = e as ItemInter
         player.src = getMusic(music.id)
         current.value = 0
         duration.value = music.duration
@@ -68,6 +71,10 @@
         // 获取进度条容器宽度，此处应该不会为 undefined
         const width = progressContrainer?.clientWidth;
         // console.log(width)
+        if (width === undefined) {
+            alert('Internal error: progress container width is undefined')
+            return
+        }
         // 获取点击位置相对于进度条容器左侧的距离
         const clickX = event.offsetX;
         // console.log(clickX)

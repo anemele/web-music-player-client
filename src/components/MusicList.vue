@@ -22,7 +22,7 @@ let items = reactive<ItemInter[]>([
         title: 'Title 1',
         artist: 'Artist 1',
         album: 'Album 1',
-        duration: '1:23',
+        duration: 123,
     }
 ])
 
