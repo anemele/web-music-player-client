@@ -4,10 +4,11 @@ import { emitter, Events } from "@/tools/emit";
 import { convertSecondToTime } from "@/tools/utils";
 import { ref } from "vue";
 import { type ItemInter } from "./inter";
+import { PlayModeList } from "./consts"
 
 const player = new Audio()
 
-emitter.on(Events.sendMusic, (e) => {
+emitter.on(Events.SendMusic, (e) => {
     // 此处类型检查不过，使用断言改变类型
     // 虽然不很美观，但是可以通过类型检查
     const music = e as ItemInter
@@ -50,7 +51,17 @@ player.ontimeupdate = function () {
 }
 
 player.onended = function () {
-    emitter.emit(Events.nextMusic)
+    emitter.emit(Events.NextMusic)
+}
+
+emitter.on(Events.ReloadMusic, () => {
+    if (player.paused) { player.play() }
+})
+
+let mode = ref(0)
+function togglePlayMode() {
+    mode.value = (mode.value + 1) % PlayModeList.length
+    emitter.emit(Events.TogglePlayMode, PlayModeList[mode.value])
 }
 
 function TODO() {
@@ -75,19 +86,23 @@ function TODO() {
         </div>
         <div class="controls">
             <div class="left-controls">
-                <button @click="emitter.emit(Events.nextMusic)">
+                <button @click="emitter.emit(Events.PrevMusic)">
                     <img src="@/assets/image/btn-prev.svg" alt="">
                 </button>
                 <button @click="playAndPause">
                     <img v-show="player.paused" src="@/assets/image/btn-play.svg" alt="">
                     <img v-show="!player.paused" src="@/assets/image/btn-pause.svg" alt="">
                 </button>
-                <button @click="emitter.emit(Events.nextMusic)">
+                <button @click="emitter.emit(Events.NextMusic)">
                     <img src="@/assets/image/btn-next.svg" alt="">
                 </button>
             </div>
             <div class="right-controls">
-                <button @click="TODO">模式</button>
+                <button @click="togglePlayMode">
+                    <img v-show="mode === 0" src="@/assets/image/btn-mode-random.svg" alt="">
+                    <img v-show="mode === 1" src="@/assets/image/btn-mode-list-cycle.svg" alt="">
+                    <img v-show="mode === 2" src="@/assets/image/btn-mode-single-cycle.svg" alt="">
+                </button>
                 <button @click="TODO">
                     <img src="@/assets/image/btn-list.svg" alt="">
                 </button>
