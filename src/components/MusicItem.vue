@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { type ItemInter } from './inter'
-import { convertSecondToTime } from '@/tools/utils';
+import { type MusicInter } from '@/api';
+import { convertSecondToTime } from '@/tools';
 
-defineProps<{ item: ItemInter, index: number }>()
+defineProps<{ item: MusicInter, index: number }>()
 </script>
 
 <template>

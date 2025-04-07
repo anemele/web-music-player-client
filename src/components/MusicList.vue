@@ -1,35 +1,42 @@
 <script lang="ts" setup>
+import { getMusic, getMusicList,getPlaylist, type MusicInter, type PlaylistInter } from '@/api';
 import { Events, emitter } from '@/tools/emit';
 import { onMounted, reactive, ref } from 'vue';
-import { type ItemInter } from './inter';
 import MusicItem from './MusicItem.vue';
-import { PlayMode } from './consts'
-import { getMusicList } from "@/api";
+import { PlayMode } from './consts';
 
 // 此处设置默认数据，防止后端服务器未开启导致页面空白
-let items = reactive<ItemInter[]>([
+let items = reactive<MusicInter[]>([
     {
         id: 1,
         title: 'Title 1',
         artist: 'Artist 1',
         album: 'Album 1',
-        duration: 123,
+        duration: 111,
     }
 ])
 
 onMounted(() => setTimeout(async () => {
-    let res = await getMusicList();
+    let res = await getPlaylist(1);
     if (res.data === null) {
         alert('server error')
         return
     }
-    if (res.data.length === 0) {
+    const playlist = res.data as PlaylistInter;
+    if (playlist.songs.length === 0) {
         alert('no music')
         return
     }
     // 移除默认数据
     items.pop()
-    res.data.forEach((it: ItemInter) => items.push(it))
+    playlist.songs.forEach(async (id: number) => {
+        const res = await getMusic(id)
+        if (res.data === null) {
+            console.error('get music error:', id)
+            return
+        }
+        items.push(res.data as MusicInter)
+    })
 }, 50))
 
 let activeIndex = ref(-1)

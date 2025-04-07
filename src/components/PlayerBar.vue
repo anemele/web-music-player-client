@@ -1,18 +1,17 @@
 <script lang="ts" setup>
-import { getMusic } from "@/api";
-import { emitter, Events } from "@/tools/emit";
-import { convertSecondToTime } from "@/tools/utils";
+import { getMusicFile, type MusicInter } from "@/api";
+import { convertSecondToTime } from "@/tools";
+import { Events, emitter } from "@/tools/emit";
 import { ref } from "vue";
-import { type ItemInter } from "./inter";
-import { PlayModeList } from "./consts"
+import { PlayModeList } from "./consts";
 
 const player = new Audio()
 
 emitter.on(Events.SendMusic, (e) => {
     // 此处类型检查不过，使用断言改变类型
     // 虽然不很美观，但是可以通过类型检查
-    const music = e as ItemInter
-    player.src = getMusic(music.id)
+    const music = e as MusicInter
+    player.src = getMusicFile(music.id)
     current.value = 0
     duration.value = music.duration
     // 使用 source 标签后要 load 否则无法播放
