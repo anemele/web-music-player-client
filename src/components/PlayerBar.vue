@@ -26,7 +26,7 @@ function playAndPause() {
 }
 
 let current = ref(0)
-let duration = ref(123)
+let duration = ref(0)
 
 function changeCurrentTime(event: MouseEvent) {
     // 用选择器获取目标，不要用 event ，因为 event 可能是冒泡事件

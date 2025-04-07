@@ -73,7 +73,6 @@ function selectMusic(idx: number) {
     activeIndex.value = idx;
     document.title = musicList[idx].title + ' - ' + musicList[idx].artist
     emitter.emit(Events.SendMusic, musicList[idx])
-    emitter.emit(Events.LocateCurrent)
 }
 
 let playMode = ref(PlayMode.RANDOM)
