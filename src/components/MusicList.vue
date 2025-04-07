@@ -6,8 +6,8 @@ import MusicItem from './MusicItem.vue';
 import PlaylistItem from './PlaylistItem.vue';
 import { PlayMode } from './consts';
 
-const playlistList : PlaylistInter[] = [];
-const musicListMap : Map<number, MusicInter> =new Map();
+const playlistList = reactive<PlaylistInter[]>([]);
+const musicListMap = new Map<number, MusicInter>();
 
 // 此处设置默认数据，防止后端服务器未开启导致页面空白
 const musicList = reactive<MusicInter[]>([
