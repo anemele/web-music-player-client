@@ -6,6 +6,7 @@ export enum Events {
   NextMusic = "NextMusic",
   PrevMusic = "PrevMusic",
   TogglePlayMode = "TogglePlayMode",
+  TogglePlaylist = "TogglePlaylist",
   ReloadMusic = "Reload",
   LocateCurrent = "LocateCurrent",
   Test = "Test",

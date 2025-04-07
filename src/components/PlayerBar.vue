@@ -11,6 +11,7 @@ emitter.on(Events.SendMusic, (e) => {
     // 此处类型检查不过，使用断言改变类型
     // 虽然不很美观，但是可以通过类型检查
     const music = e as MusicInter
+    if (!player.paused) { player.pause() }
     player.src = getMusicFile(music.id)
     current.value = 0
     duration.value = music.duration
@@ -102,7 +103,7 @@ function TODO() {
                     <img v-show="mode === 1" src="@/assets/image/btn-mode-list-cycle.svg" alt="">
                     <img v-show="mode === 2" src="@/assets/image/btn-mode-single-cycle.svg" alt="">
                 </button>
-                <button @click="TODO">
+                <button @click="emitter.emit(Events.TogglePlaylist)">
                     <img src="@/assets/image/btn-list.svg" alt="">
                 </button>
             </div>
