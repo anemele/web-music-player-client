@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { type MusicInter } from '@/api';
 import { convertSecondToTime } from '@/tools';
+import MusicItemContent from './MusicItemContent.vue';
 
 defineProps<{ item: MusicInter, index: number }>()
 </script>
@@ -10,10 +11,7 @@ defineProps<{ item: MusicInter, index: number }>()
         <span>{{ index + 1 }}</span>
         <i></i>
     </div>
-    <div class="content">
-        <div class="name">{{ item.title }}</div>
-        <div class="album">{{ item.artist }} - {{ item.album }}</div>
-    </div>
+    <MusicItemContent :title="item.title" :artist="item.artist" :album="item.album" />
     <div class="duration">{{ convertSecondToTime(item.duration) }}</div>
 </template>
 
@@ -31,34 +29,6 @@ defineProps<{ item: MusicInter, index: number }>()
     font-size: 20px;
     line-height: 50px;
     color: red
-}
-
-.content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 0;
-    width: 100%;
-    height: 100%;
-    box-shadow: 0 1px 1px -1px #ccc
-}
-
-.name {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: calc(100% - 80px);
-    font-size: 15px;
-    color: #000;
-    margin-bottom: 4px
-}
-
-.album {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: calc(100% - 80px);
-    font-size: 11px
 }
 
 .duration {

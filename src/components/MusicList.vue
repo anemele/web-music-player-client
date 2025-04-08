@@ -2,16 +2,14 @@
 import { useMusicDataStore } from "@/store/musicdata";
 import { PlayMode, usePlayModeStore, useShowStore } from "@/store/state";
 import { Events, emitter } from '@/tools/emit';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
+import { useRouter } from "vue-router";
 import MusicItem from './MusicItem.vue';
 import PlaylistItem from './PlaylistItem.vue';
 
 const musicDataStore = useMusicDataStore();
 const playModeStore = usePlayModeStore();
 const showStore = useShowStore();
-
-// 挂载后等待100毫秒再初始化
-onMounted(() => setTimeout(musicDataStore.init, 100))
 
 let playlistIndex = ref(0);
 function selectPlaylist(index: number) {
@@ -26,12 +24,12 @@ let activeIndex = ref(-1)
 function selectMusic(idx: number) {
     if (activeIndex.value === idx) { return }
     activeIndex.value = idx;
-    document.title = musicDataStore.musicList[idx].title + ' - ' + musicDataStore.musicList[idx].artist
-    emitter.emit(Events.SendMusic, musicDataStore.musicList[idx])
+    document.title = musicDataStore.currentMusicList[idx].title + ' - ' + musicDataStore.currentMusicList[idx].artist
+    emitter.emit(Events.SendMusic, musicDataStore.currentMusicList[idx])
 }
 
 function randMusic() {
-    return Math.floor(Math.random() * musicDataStore.musicList.length)
+    return Math.floor(Math.random() * musicDataStore.currentMusicList.length)
 }
 
 function changeMusic(next: boolean) {
@@ -44,8 +42,8 @@ function changeMusic(next: boolean) {
             break;
         case PlayMode.LIST_LOOP:
             let idx: number;
-            if (next) { idx = (activeIndex.value + 1) % musicDataStore.musicList.length }
-            else { idx = (activeIndex.value - 1 + musicDataStore.musicList.length) % musicDataStore.musicList.length }
+            if (next) { idx = (activeIndex.value + 1) % musicDataStore.currentMusicList.length }
+            else { idx = (activeIndex.value - 1 + musicDataStore.currentMusicList.length) % musicDataStore.currentMusicList.length }
             selectMusic(idx)
             break;
         default:
@@ -57,11 +55,17 @@ function changeMusic(next: boolean) {
 
 emitter.on(Events.NextMusic, () => setTimeout(() => changeMusic(true), 100))
 emitter.on(Events.PrevMusic, () => setTimeout(() => changeMusic(false), 100))
+
+const router = useRouter()
+function editPlaylist(id: number) {
+    if (id === 0) { console.log('默认歌单不能编辑'); return }
+    router.push({ path: '/playlist/' + id })
+}
 </script>
 
 <template>
     <div>
-        <li class="music-item" v-for="(item, index) in musicDataStore.musicList" :key="item.id"
+        <li class="music-item" v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id"
             @click="selectMusic(index)" :class="{ current: activeIndex === index }">
             <MusicItem :item="item" :index="index" />
         </li>
@@ -71,7 +75,7 @@ emitter.on(Events.PrevMusic, () => setTimeout(() => changeMusic(false), 100))
             @click="selectPlaylist(index)" :class="{ current: playlistIndex === index }">
             <PlaylistItem :name="item.name" :count="item.songs.length" />
         </li>
-        <button class="edit-playlist" @click="console.log(playlistIndex)">edit</button>
+        <button class="edit-playlist" @click="editPlaylist(musicDataStore.playlistList[playlistIndex].id)">edit</button>
     </div>
 </template>
 

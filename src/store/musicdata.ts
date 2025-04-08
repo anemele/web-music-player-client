@@ -5,16 +5,17 @@ import { reactive } from "vue";
 export const useMusicDataStore = defineStore("musicdata", () => {
     const playlistList = reactive<PlaylistInter[]>([]);
     const musicList = reactive<MusicInter[]>([])
-    const musicListMap = new Map<number, MusicInter>();
+    const musicMap = new Map<number, MusicInter>();
+    const currentMusicList = reactive<MusicInter[]>([])
 
     function updateMusicList(playlist: PlaylistInter) {
         // 清空原有数据
-        musicList.length = 0
+        currentMusicList.length = 0
 
         playlist.songs.forEach((id: number) => {
-            const music = musicListMap.get(id)
+            const music = musicMap.get(id)
             if (music) {
-                musicList.push(music)
+                currentMusicList.push(music)
             }
         })
     }
@@ -27,16 +28,18 @@ export const useMusicDataStore = defineStore("musicdata", () => {
             return;
         }
 
-        let defaultPlaylist = {
+        let defaultPlaylist: PlaylistInter = {
             id: 0,
             name: 'Default',
             songs: [],
         }
         res.data.forEach((item: MusicInter) => {
-            // 第一个播放列表是全部音乐
+            // 默认播放列表是全部音乐
             defaultPlaylist.songs.push(item.id)
+            // 全部音乐数据
+            musicList.push(item)
             // 音乐数据映射，方便播放列表切换时查找
-            musicListMap.set(item.id, item)
+            musicMap.set(item.id, item)
         });
         playlistList.length = 0
         playlistList.push(defaultPlaylist)
@@ -50,15 +53,16 @@ export const useMusicDataStore = defineStore("musicdata", () => {
             playlistList.push(item);
         });
 
-        // 默认播放第一个播放列表，即全部音乐
-        updateMusicList(playlistList[0]);
+        // 默认播放列表，即全部音乐
+        updateMusicList(defaultPlaylist);
     }
+
+    setTimeout(init, 100)
 
     return {
         playlistList,
         musicList,
-        musicListMap,
-        init,
+        currentMusicList,
         updateMusicList,
     }
 })

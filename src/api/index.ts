@@ -16,6 +16,13 @@ export function getPlaylist(id: number) {
   return request.get("/list/" + id);
 }
 
+export function updatePlaylist(data: PlaylistInter) {
+  return request.put("/list/" + data.id, {
+    name: data.name,
+    songs: data.songs,
+  });
+}
+
 export function getPlaylistList() {
   return request.get("/list");
 }

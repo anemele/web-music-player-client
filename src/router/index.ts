@@ -1,14 +1,22 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import Music from "@/pages/Music.vue";
-
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: "/",
-      component: Music,
+      redirect: "/music",
     },
+    {
+      path: "/music",
+      component: () => import("@/pages/Music.vue"),
+    },
+    {
+      path: "/playlist/:id",
+      name: "playlist",
+      component: () => import("@/components/PlaylistEditor.vue"),
+      props: true
+    }
   ],
 });
 
