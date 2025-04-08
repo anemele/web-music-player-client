@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { getMusicFile, type MusicInter } from "@/api";
+import { usePlayModeStore, useShowStore, PlayMode } from "@/store/state";
 import { convertSecondToTime } from "@/tools";
 import { Events, emitter } from "@/tools/emit";
 import { ref } from "vue";
-import { PlayModeList } from "./consts";
 
 const player = new Audio()
 
@@ -58,15 +58,10 @@ emitter.on(Events.ReloadMusic, () => {
     if (player.paused) { player.play() }
 })
 
-let mode = ref(0)
-function togglePlayMode() {
-    mode.value = (mode.value + 1) % PlayModeList.length
-    emitter.emit(Events.TogglePlayMode, PlayModeList[mode.value])
-}
 
-function TODO() {
-    alert('TODO')
-}
+const playModeStore = usePlayModeStore()
+const showStore = useShowStore()
+
 </script>
 
 <template>
@@ -80,7 +75,7 @@ function TODO() {
         <div class="progress">
             <i>{{ convertSecondToTime(current) }}</i>
             <div class="progress-container" @click="changeCurrentTime">
-                <div class="progress-bar" :style="{width: `${(current/duration)*100}%`}"></div>
+                <div class="progress-bar" :style="{ width: `${(current / duration) * 100}%` }"></div>
             </div>
             <i>{{ convertSecondToTime(duration) }}</i>
         </div>
@@ -98,12 +93,15 @@ function TODO() {
                 </button>
             </div>
             <div class="right-controls">
-                <button @click="togglePlayMode">
-                    <img v-show="mode === 0" src="@/assets/image/btn-mode-random.svg" alt="">
-                    <img v-show="mode === 1" src="@/assets/image/btn-mode-list-cycle.svg" alt="">
-                    <img v-show="mode === 2" src="@/assets/image/btn-mode-single-cycle.svg" alt="">
+                <button @click="playModeStore.togglePlayMode">
+                    <img v-show="playModeStore.playMode === PlayMode.RANDOM" src="@/assets/image/btn-mode-random.svg"
+                        alt="">
+                    <img v-show="playModeStore.playMode === PlayMode.LIST_LOOP"
+                        src="@/assets/image/btn-mode-list-cycle.svg" alt="">
+                    <img v-show="playModeStore.playMode === PlayMode.SINGLE_LOOP"
+                        src="@/assets/image/btn-mode-single-cycle.svg" alt="">
                 </button>
-                <button @click="emitter.emit(Events.TogglePlaylist)">
+                <button @click="showStore.toggleShow">
                     <img src="@/assets/image/btn-list.svg" alt="">
                 </button>
             </div>
@@ -112,97 +110,97 @@ function TODO() {
 </template>
 
 <style scoped>
-    .player-bar {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        height: 100px;
-        background-color: gray;
-        color: #fff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
-        flex-direction: column;
-        opacity: 0.9;
-    }
+.player-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 100px;
+    background-color: gray;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    flex-direction: column;
+    opacity: 0.9;
+}
 
-    /* 进度条样式    */
-    .progress {
-        width: 90%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 10px;
-    }
+/* 进度条样式    */
+.progress {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
 
-    /* 进度条容器样式 */
-    .progress-container {
-        width: 100%;
-        height: 10px;
-        margin-left: 10px;
-        margin-right: 10px;
-        background-color: #ddd;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+/* 进度条容器样式 */
+.progress-container {
+    width: 100%;
+    height: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background-color: #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-    /* 进度条样式 */
-    .progress-bar {
-        height: 100%;
-        background-color: #007BFF;
-        border-radius: 5px;
-        width: 0%;
-    }
+/* 进度条样式 */
+.progress-bar {
+    height: 100%;
+    background-color: #007BFF;
+    border-radius: 5px;
+    width: 0%;
+}
 
-    /* 控制按钮样式 */
-    .controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 90%;
-        margin-top: 10px;
-    }
+/* 控制按钮样式 */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin-top: 10px;
+}
 
-    /* 左侧控制按钮样式 */
-    .left-controls {
-        display: flex;
-        justify-content: left;
-        align-items: center;
-        width: 100%;
-    }
+/* 左侧控制按钮样式 */
+.left-controls {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 100%;
+}
 
-    /* 右侧控制按钮样式 */
-    .right-controls {
-        display: flex;
-        justify-content: right;
-        align-items: center;
-        width: 100%;
-    }
+/* 右侧控制按钮样式 */
+.right-controls {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    width: 100%;
+}
 
-    /* 控制按钮样式 */
-    .controls button {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-    }
+/* 控制按钮样式 */
+.controls button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
 
-    .controls button img {
-        width: 30px;
-        height: 30px;
-    }
+.controls button img {
+    width: 30px;
+    height: 30px;
+}
 
-    button:focus {
-        outline: none;
-    }
+button:focus {
+    outline: none;
+}
 
-    /* 左侧控制按钮样式 */
-    .left-controls button {
-        margin: 5px;
-    }
+/* 左侧控制按钮样式 */
+.left-controls button {
+    margin: 5px;
+}
 
-    /* 右侧控制按钮样式 */
-    .right-controls button {
-        margin: 5px;
-    }
+/* 右侧控制按钮样式 */
+.right-controls button {
+    margin: 5px;
+}
 </style>

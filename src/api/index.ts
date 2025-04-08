@@ -12,7 +12,7 @@ export interface PlaylistInter {
   songs: number[];
 }
 
-export async function getPlaylist(id: number) {
+export function getPlaylist(id: number) {
   return request.get("/list/" + id);
 }
 

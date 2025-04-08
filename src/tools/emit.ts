@@ -5,8 +5,5 @@ export enum Events {
   SendMusic = "SendMusic",
   NextMusic = "NextMusic",
   PrevMusic = "PrevMusic",
-  TogglePlayMode = "TogglePlayMode",
-  TogglePlaylist = "TogglePlaylist",
   ReloadMusic = "Reload",
-  Test = "Test",
 }
