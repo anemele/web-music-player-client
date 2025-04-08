@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getPlaylist, updatePlaylist, type PlaylistInter } from '@/api';
+import { getPlaylist, putPlaylist, type PlaylistInter } from '@/api';
 import { useMusicDataStore } from '@/store/musicdata';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -45,10 +45,10 @@ const submitSelection = () => {
         songs: Array.from(selectedItems.value)
     };
 
-    updatePlaylist(newPlaylist).then((res) => {
+    putPlaylist(newPlaylist).then((res) => {
         musicDataStore.playlistList.forEach((item) => {
             if (item.id === playlistId) {
-                console.log('更新成功:', item.name, '->', newPlaylist.name)
+                console.log('更新成功:', item.name, `(${item.songs.length})`, '->', newPlaylist.name, `(${newPlaylist.songs.length})`)
                 item.name = newPlaylist.name
                 item.songs = newPlaylist.songs
             }

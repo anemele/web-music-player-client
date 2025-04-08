@@ -16,11 +16,23 @@ export function getPlaylist(id: number) {
   return request.get("/list/" + id);
 }
 
-export function updatePlaylist(data: PlaylistInter) {
+// POST does not need `id`
+export function postPlaylist(data: { name: string; songs: number[] }) {
+  return request.post("/list/", {
+    name: data.name,
+    songs: data.songs,
+  });
+}
+
+export function putPlaylist(data: PlaylistInter) {
   return request.put("/list/" + data.id, {
     name: data.name,
     songs: data.songs,
   });
+}
+
+export function deletePlaylist(id: number) {
+  return request.delete("/list/" + id);
 }
 
 export function getPlaylistList() {

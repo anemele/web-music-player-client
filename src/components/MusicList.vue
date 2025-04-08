@@ -57,10 +57,16 @@ emitter.on(Events.NextMusic, () => setTimeout(() => changeMusic(true), 100))
 emitter.on(Events.PrevMusic, () => setTimeout(() => changeMusic(false), 100))
 
 const router = useRouter()
+
 function editPlaylist(id: number) {
     if (id === 0) { console.log('默认歌单不能编辑'); return }
     router.push({ path: '/playlist/' + id })
 }
+
+function routePlaylist() {
+    router.push({ path: '/playlist/' })
+}
+
 </script>
 
 <template>
@@ -75,7 +81,10 @@ function editPlaylist(id: number) {
             @click="selectPlaylist(index)" :class="{ current: playlistIndex === index }">
             <PlaylistItem :name="item.name" :count="item.songs.length" />
         </li>
-        <button class="edit-playlist" @click="editPlaylist(musicDataStore.playlistList[playlistIndex].id)">edit</button>
+        <div class="edit-playlist">
+            <button @click="editPlaylist(musicDataStore.playlistList[playlistIndex].id)">edit</button>
+            <button @click="routePlaylist">more</button>
+        </div>
     </div>
 </template>
 
@@ -111,7 +120,7 @@ function editPlaylist(id: number) {
     color: #999;
 }
 
-.edit-playlist {
+.edit-playlist button {
     color: blue;
     background-color: skyblue;
     font-size: 16px;
@@ -120,8 +129,7 @@ function editPlaylist(id: number) {
     border-width: 2px;
     border-color: gray;
     border-radius: 10%;
-    margin-top: 5px;
+    margin: 5px 10px;
     padding: 2px 5px;
-    margin-top: 5px;
 }
 </style>
