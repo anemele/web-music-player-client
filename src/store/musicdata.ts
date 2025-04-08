@@ -3,25 +3,8 @@ import { defineStore } from "pinia";
 import { reactive } from "vue";
 
 export const useMusicDataStore = defineStore("musicdata", () => {
-    const playlistList = reactive<PlaylistInter[]>([
-        {
-            id: 0,
-            name: 'Default',
-            songs: [],
-        }
-    ]);
-
-    // 此处设置默认数据，防止后端服务器未开启导致页面空白
-    const musicList = reactive<MusicInter[]>([
-        {
-            id: 1,
-            title: 'Title 1',
-            artist: 'Artist 1',
-            album: 'Album 1',
-            duration: 111,
-        }
-    ])
-
+    const playlistList = reactive<PlaylistInter[]>([]);
+    const musicList = reactive<MusicInter[]>([])
     const musicListMap = new Map<number, MusicInter>();
 
     function updateMusicList(playlist: PlaylistInter) {
@@ -43,12 +26,20 @@ export const useMusicDataStore = defineStore("musicdata", () => {
             alert("Failed to get music list");
             return;
         }
+
+        let defaultPlaylist = {
+            id: 0,
+            name: 'Default',
+            songs: [],
+        }
         res.data.forEach((item: MusicInter) => {
             // 第一个播放列表是全部音乐
-            playlistList[0].songs.push(item.id)
+            defaultPlaylist.songs.push(item.id)
             // 音乐数据映射，方便播放列表切换时查找
             musicListMap.set(item.id, item)
         });
+        playlistList.length = 0
+        playlistList.push(defaultPlaylist)
 
         // 获取全部播放列表
         res = await getPlaylistList();

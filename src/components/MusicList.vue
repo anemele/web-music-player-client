@@ -71,6 +71,7 @@ emitter.on(Events.PrevMusic, () => setTimeout(() => changeMusic(false), 100))
             @click="selectPlaylist(index)" :class="{ current: playlistIndex === index }">
             <PlaylistItem :name="item.name" :count="item.songs.length" />
         </li>
+        <button class="edit-playlist" @click="console.log('TODO')">edit</button>
     </div>
 </template>
 
@@ -96,5 +97,16 @@ div.playlist {
 li.playlist-item {
     display: flex;
     color: #999;
+}
+
+.edit-playlist {
+    color: blue;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: bold;
+    border-width: 1px;
+    border-radius: 10%;
+    margin-top: 5px;
+    padding: 2px 5px;
 }
 </style>
