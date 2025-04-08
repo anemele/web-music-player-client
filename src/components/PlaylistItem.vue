@@ -1,10 +1,10 @@
 <script setup lang="ts">
-defineProps<{name:string,count:number}>()
+defineProps<{ name: string, count: number }>()
 </script>
 
 <template>
     <div class="playlist-item">
-        <span class="name">{{name}}</span><span class="count">{{count}}</span>
+        <span class="name">{{ name }}</span><span class="count">({{ count }})</span>
     </div>
 </template>
 

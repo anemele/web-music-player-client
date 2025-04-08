@@ -19,7 +19,7 @@ function selectPlaylist(index: number) {
     playlistIndex.value = index;
     musicDataStore.updateMusicList(musicDataStore.playlistList[playlistIndex.value])
     // 隐藏播放列表
-    showStore.toggleShow()
+    // showStore.toggleShow()
 }
 
 let activeIndex = ref(-1)
@@ -61,8 +61,8 @@ emitter.on(Events.PrevMusic, () => setTimeout(() => changeMusic(false), 100))
 
 <template>
     <div>
-        <li class="item" v-for="(item, index) in musicDataStore.musicList" :key="item.id" @click="selectMusic(index)"
-            :class="{ current: activeIndex === index }">
+        <li class="music-item" v-for="(item, index) in musicDataStore.musicList" :key="item.id"
+            @click="selectMusic(index)" :class="{ current: activeIndex === index }">
             <MusicItem :item="item" :index="index" />
         </li>
     </div>
@@ -71,16 +71,16 @@ emitter.on(Events.PrevMusic, () => setTimeout(() => changeMusic(false), 100))
             @click="selectPlaylist(index)" :class="{ current: playlistIndex === index }">
             <PlaylistItem :name="item.name" :count="item.songs.length" />
         </li>
-        <button class="edit-playlist" @click="console.log('TODO')">edit</button>
+        <button class="edit-playlist" @click="console.log(playlistIndex)">edit</button>
     </div>
 </template>
 
 <style scoped>
-li.current {
-    background-color: #dddd;
+.current {
+    background-color: #cccc;
 }
 
-li.item {
+.music-item {
     position: relative;
     display: flex;
     height: 50px;
@@ -88,25 +88,36 @@ li.item {
     color: #999
 }
 
-div.playlist {
+.playlist {
     position: fixed;
+    margin: auto;
     bottom: 20%;
-    right: 5%;
+    left: 0;
+    right: 0;
+    width: fit-content;
+    background-color: #fff;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-li.playlist-item {
+.playlist-item {
     display: flex;
     color: #999;
 }
 
 .edit-playlist {
     color: blue;
+    background-color: skyblue;
     font-size: 16px;
     font-style: italic;
     font-weight: bold;
-    border-width: 1px;
+    border-width: 2px;
+    border-color: gray;
     border-radius: 10%;
     margin-top: 5px;
     padding: 2px 5px;
+    margin-top: 5px;
 }
 </style>
