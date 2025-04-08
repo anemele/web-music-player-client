@@ -34,7 +34,7 @@ function randMusic() {
     return Math.floor(Math.random() * musicDataStore.musicList.length)
 }
 
-function changeMusic(next: bool) {
+function changeMusic(next: boolean) {
     switch (playModeStore.playMode) {
         case PlayMode.RANDOM:
             selectMusic(randMusic())
