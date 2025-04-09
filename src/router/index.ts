@@ -16,7 +16,7 @@ const router = createRouter({
       component: () => import("@/pages/PlaylistList.vue"),
     },
     {
-      path: "/playlist/:id",
+      path: "/playlist/edit",
       component: () => import("@/pages/PlaylistEditor.vue"),
     }
   ],

@@ -8,14 +8,15 @@ import { useRouter } from 'vue-router';
 const musicDataStore = useMusicDataStore()
 const router = useRouter()
 
-let activeIndex = ref(-1)
+const activeIndex = ref(-1)
 function selectPlaylist(idx: number) {
     if (activeIndex.value !== idx) {
         activeIndex.value = idx
         return
     }
-    const id = musicDataStore.playlistList[idx].id
-    router.push({ path: '/playlist/' + id })
+
+    musicDataStore.playlistIndex = idx
+    router.push({ path: '/playlist/edit' })
 }
 
 function createPlaylist() {
@@ -27,7 +28,8 @@ function createPlaylist() {
     postPlaylist(playlist).then((res) => {
         console.log(res.data)
         musicDataStore.playlistList.push(res.data)
-        router.push({ path: '/playlist/' + res.data.id })
+        musicDataStore.playlistIndex = musicDataStore.playlistList.length - 1
+        router.push({ path: '/playlist/edit' })
     })
 }
 
@@ -106,5 +108,6 @@ button {
     margin: 0 10px;
     padding: 5px 10px;
     border-radius: 30%;
+    cursor: pointer;
 }
 </style>

@@ -1,39 +1,43 @@
 <script setup lang="ts">
-import { getPlaylist, putPlaylist, type MusicInter, type PlaylistInter } from '@/api';
+import { putPlaylist, type MusicInter, type PlaylistInter } from '@/api';
 import MusicItemContent from '@/components/MusicItemContent.vue';
 import { useMusicDataStore } from '@/store/musicdata';
 import { reactive, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 const musicDataStore = useMusicDataStore();
 const musicList = reactive<MusicInter[]>([]);
 const selectedItems = ref(new Set<number>());
 
-const playlistId = (function () {
-    const tmp = useRoute().params.id;
-    let res;
-    if (typeof tmp === 'string') {
-        res = parseInt(tmp)
-    } else {
-        res = parseInt(tmp[0])
-    }
-    return res
-})();
+const playlistName = ref('')
+const disabled = ref(true)
 
-let playlistName = ref('')
-getPlaylist(playlistId).then((res) => {
-    const playlist: PlaylistInter = res.data
+function getPlaylist(): PlaylistInter | null {
+    if (musicDataStore.playlistIndex === 0) {
+        console.log('默认歌单不能编辑')
+        return null
+    }
+    const playlist = musicDataStore.playlistList[musicDataStore.playlistIndex]
+    if (!playlist) {
+        console.log('歌单不存在')
+        return null
+    }
+
     playlistName.value = playlist.name
     playlist.songs.forEach((id) => {
         selectedItems.value.add(id)
         musicList.push(musicDataStore.musicMap.get(id) as MusicInter)
     })
-    // all music id list
     musicDataStore.playlistList[0].songs.forEach((id) => {
         if (selectedItems.value.has(id)) { return }
         musicList.push(musicDataStore.musicMap.get(id) as MusicInter)
     })
-})
+    disabled.value = false
+
+    return playlist
+}
+
+const playlist = getPlaylist()
 
 function toggleSelection(id: number) {
     if (selectedItems.value.has(id)) {
@@ -47,15 +51,17 @@ const router = useRouter()
 
 const submitSelection = () => {
     // console.log('提交选中的项目:', selectedItems.value);
+    if (playlist === null) { return }
+
     const newPlaylist = {
-        id: playlistId,
+        id: playlist.id,
         name: playlistName.value,
         songs: Array.from(selectedItems.value)
     };
 
     putPlaylist(newPlaylist).then((res) => {
         for (const item of musicDataStore.playlistList) {
-            if (item.id === playlistId) {
+            if (item.id === playlist.id) {
                 const msg = `${item.name} (${item.songs.length}) -> ${newPlaylist.name} (${newPlaylist.songs.length})`;
                 console.log('更新歌单:', msg);
                 item.name = newPlaylist.name;
@@ -82,7 +88,7 @@ const selectAllorNone = () => {
     <div class="app-container">
         <!-- 头部 -->
         <header class="header">
-            <input type="text" v-model="playlistName">
+            <input type="text" placeholder="请输入标题" v-model="playlistName" :disabled="disabled">
             <span> ({{ selectedItems.size }})</span>
         </header>
         <!-- 列表内容 -->
@@ -96,8 +102,8 @@ const selectAllorNone = () => {
         </div>
         <!-- 底部 -->
         <footer class="footer">
-            <button @click="submitSelection">提交</button>
-            <button @click="selectAllorNone">
+            <button @click="submitSelection" :disabled="disabled">提交</button>
+            <button @click="selectAllorNone" :disabled="disabled">
                 {{
                     selectedItems.size === musicList.length ? "取消" : "全选"
                 }}
@@ -185,5 +191,6 @@ button {
     margin: 0 10px;
     padding: 5px 10px;
     border-radius: 30%;
+    cursor: pointer;
 }
 </style>

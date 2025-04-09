@@ -11,7 +11,7 @@ const musicDataStore = useMusicDataStore();
 const playModeStore = usePlayModeStore();
 const showStore = useShowStore();
 
-let { playlistIndex, musicIndex } = storeToRefs(musicDataStore);
+const { playlistIndex, musicIndex } = storeToRefs(musicDataStore);
 
 function selectPlaylist(index: number) {
     if (playlistIndex.value === index) { return }
@@ -56,13 +56,17 @@ emitter.on(Events.PrevMusic, () => setTimeout(() => changeMusic(false), 100))
 
 const router = useRouter()
 
-function editPlaylist(id: number) {
-    if (id === 0) { console.log('默认歌单不能编辑'); return }
-    router.push({ path: '/playlist/' + id })
+function editPlaylist() {
+    if (musicDataStore.playlistIndex === 0) {
+        console.log('默认歌单不能编辑');
+        alert('默认歌单不能编辑');
+        return;
+    }
+    router.push({ path: '/playlist/edit' })
 }
 
 function routePlaylist() {
-    router.push({ path: '/playlist/' })
+    router.push({ path: '/playlist' })
 }
 
 </script>
@@ -80,8 +84,8 @@ function routePlaylist() {
             <PlaylistItem :name="item.name" :count="item.songs.length" />
         </li>
         <div class="edit-playlist">
-            <button @click="editPlaylist(musicDataStore.playlistList[playlistIndex].id)">edit</button>
-            <button @click="routePlaylist">more</button>
+            <button @click="editPlaylist"> edit </button>
+            <button @click="routePlaylist"> more </button>
         </div>
     </div>
 </template>
@@ -129,5 +133,6 @@ function routePlaylist() {
     border-radius: 10%;
     margin: 5px 10px;
     padding: 2px 5px;
+    cursor: pointer;
 }
 </style>

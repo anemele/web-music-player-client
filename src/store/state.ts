@@ -17,7 +17,7 @@ let playModeIndex = 0;
 
 
 export const useShowStore = defineStore('show', () => {
-    let playlistShow = ref(false)
+    const playlistShow = ref(false)
 
     function toggleShow() {
         playlistShow.value = !playlistShow.value;
@@ -27,7 +27,7 @@ export const useShowStore = defineStore('show', () => {
 });
 
 export const usePlayModeStore = defineStore('playmode', () => {
-    let playMode = ref(PlayMode.RANDOM)
+    const playMode = ref(PlayMode.RANDOM)
 
     function togglePlayMode() {
         playModeIndex = (playModeIndex + 1) % PlayModeList.length;

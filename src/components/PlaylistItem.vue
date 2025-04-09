@@ -17,6 +17,7 @@ defineProps<{ name: string, count: number }>()
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 100%;
+    cursor: pointer;
 }
 
 .name {

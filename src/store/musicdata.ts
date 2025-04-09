@@ -27,7 +27,7 @@ export const useMusicDataStore = defineStore("musicdata", () => {
             return;
         }
 
-        let defaultPlaylist: PlaylistInter = {
+        const defaultPlaylist: PlaylistInter = {
             id: 0,
             name: '[Default]',
             songs: [],
@@ -56,8 +56,8 @@ export const useMusicDataStore = defineStore("musicdata", () => {
 
     setTimeout(init, 100)
 
-    let playlistIndex = ref(0);
-    let musicIndex = ref(-1);
+    const playlistIndex = ref(0);
+    const musicIndex = ref(-1);
 
     return {
         playlistList,

@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { getMusicFile, type MusicInter } from "@/api";
-import { usePlayModeStore, useShowStore, PlayMode } from "@/store/state";
+import { usePlayerStore } from "@/store/player";
+import { PlayMode, usePlayModeStore, useShowStore } from "@/store/state";
 import { convertSecondToTime } from "@/tools";
 import { Events, emitter } from "@/tools/emit";
 import { ref } from "vue";
-import { usePlayerStore } from "@/store/player";
-import { storeToRefs } from "pinia";
 
 const playerStore = usePlayerStore()
 
@@ -27,8 +26,8 @@ function playAndPause() {
     playerStore.player.paused ? playerStore.player.play() : playerStore.player.pause()
 }
 
-let current = ref(0)
-let duration = ref(0)
+const current = ref(0)
+const duration = ref(0)
 
 function changeCurrentTime(event: MouseEvent) {
     // 用选择器获取目标，不要用 event ，因为 event 可能是冒泡事件
