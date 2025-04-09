@@ -133,7 +133,9 @@ const selectAllorNone = () => {
 }
 
 .header input {
-    width: 25%;
+    width: 60%;
+    margin-left: 10px;
+    margin-right: 10px;
     height: 35px;
     font-size: 20px;
     font-family: "Times New Roman", Times, simhei;

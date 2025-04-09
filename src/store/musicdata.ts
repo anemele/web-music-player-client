@@ -59,6 +59,25 @@ export const useMusicDataStore = defineStore("musicdata", () => {
     const playlistIndex = ref(0);
     const musicIndex = ref(-1);
 
+    function getCurrentPlaylist() {
+        return playlistList[playlistIndex.value];
+    }
+
+    function getCurrentMusic() {
+        return currentMusicList[musicIndex.value];
+    }
+
+    const currentTitle = ref('');
+    function updateCurrentTitle() {
+        const music = getCurrentMusic();
+        if (music) {
+            currentTitle.value = `${music.title} - ${music.artist}`
+        } else {
+            currentTitle.value = '';
+        }
+        return currentTitle.value;
+    }
+
     return {
         playlistList,
         musicMap,
@@ -66,5 +85,9 @@ export const useMusicDataStore = defineStore("musicdata", () => {
         playlistIndex,
         musicIndex,
         updateMusicList,
+        getCurrentPlaylist,
+        getCurrentMusic,
+        currentTitle,
+        updateCurrentTitle,
     }
 })
