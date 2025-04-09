@@ -81,12 +81,12 @@ function routePlaylist() {
     </div>
 
     <div class="music-list">
-        <ul>
-            <li class="music-item" v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id"
-                @click="selectMusic(index)" :class="{ current: musicIndex === index }">
-                <MusicItem :item="item" :index="index" />
-            </li>
-        </ul>
+        <!-- <ul> -->
+		<li class="music-item" v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id"
+			@click="selectMusic(index)" :class="{ current: musicIndex === index }">
+			<MusicItem :item="item" :index="index" />
+		</li>
+        <!-- </ul> -->
     </div>
 
     <div v-show="showStore.playlistShow" class="playlist">
@@ -116,13 +116,16 @@ function routePlaylist() {
     right: 0;
     font-size: 24px;
     height: 50px;
-    background-color: #eee;
+    color: white;
+    background-color: gray;
 }
 
 .music-title span {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 .current {
