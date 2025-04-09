@@ -4,25 +4,27 @@ import { usePlayModeStore, useShowStore, PlayMode } from "@/store/state";
 import { convertSecondToTime } from "@/tools";
 import { Events, emitter } from "@/tools/emit";
 import { ref } from "vue";
+import { usePlayerStore } from "@/store/player";
+import { storeToRefs } from "pinia";
 
-const player = new Audio()
+const playerStore = usePlayerStore()
 
 emitter.on(Events.SendMusic, (e) => {
     // 此处类型检查不过，使用断言改变类型
     // 虽然不很美观，但是可以通过类型检查
     const music = e as MusicInter
-    if (!player.paused) { player.pause() }
-    player.src = getMusicFile(music.id)
+    if (!playerStore.player.paused) { playerStore.player.pause() }
+    playerStore.player.src = getMusicFile(music.id)
     current.value = 0
     duration.value = music.duration
     // 使用 source 标签后要 load 否则无法播放
     // 改用 Audio 对象之后不要 load 否则会有重音
-    // player.load()
-    if (player.paused) { player.play() }
+    // playerStore.player.load()
+    if (playerStore.player.paused) { playerStore.player.play() }
 })
 
 function playAndPause() {
-    player.paused ? player.play() : player.pause()
+    playerStore.player.paused ? playerStore.player.play() : playerStore.player.pause()
 }
 
 let current = ref(0)
@@ -43,21 +45,20 @@ function changeCurrentTime(event: MouseEvent) {
     // console.log(clickX)
     current.value = (clickX / width) * duration.value;
     // 设置当前播放时间
-    player.currentTime = current.value
+    playerStore.player.currentTime = current.value
 }
 
-player.ontimeupdate = function () {
-    current.value = player.currentTime
+playerStore.player.ontimeupdate = function () {
+    current.value = playerStore.player.currentTime
 }
 
-player.onended = function () {
+playerStore.player.onended = function () {
     emitter.emit(Events.NextMusic)
 }
 
 emitter.on(Events.ReloadMusic, () => {
-    if (player.paused) { player.play() }
+    if (playerStore.player.paused) { playerStore.player.play() }
 })
-
 
 const playModeStore = usePlayModeStore()
 const showStore = useShowStore()
@@ -85,8 +86,8 @@ const showStore = useShowStore()
                     <img src="@/assets/image/btn-prev.svg" alt="">
                 </button>
                 <button @click="playAndPause">
-                    <img v-show="player.paused" src="@/assets/image/btn-play.svg" alt="">
-                    <img v-show="!player.paused" src="@/assets/image/btn-pause.svg" alt="">
+                    <img v-show="playerStore.player.paused" src="@/assets/image/btn-play.svg" alt="">
+                    <img v-show="!playerStore.player.paused" src="@/assets/image/btn-pause.svg" alt="">
                 </button>
                 <button @click="emitter.emit(Events.NextMusic)">
                     <img src="@/assets/image/btn-next.svg" alt="">

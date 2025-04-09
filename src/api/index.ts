@@ -1,10 +1,8 @@
 import axios from "axios";
 
-const ApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const baseURL = "/api";
 
-const request = axios.create({
-  baseURL: ApiBaseUrl,
-});
+const request = axios.create({ baseURL });
 
 export interface PlaylistInter {
   id: number;
@@ -56,5 +54,5 @@ export function getMusicList() {
 }
 
 export function getMusicFile(id: number) {
-  return (ApiBaseUrl + "/music/" + id + "/file");
+  return (baseURL + "/music/" + id + "/file");
 }
