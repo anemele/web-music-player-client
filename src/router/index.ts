@@ -13,11 +13,11 @@ const router = createRouter({
     },
     {
       path: "/playlist",
-      component: () => import("@/components/PlaylistList.vue"),
+      component: () => import("@/pages/PlaylistList.vue"),
     },
     {
       path: "/playlist/:id",
-      component: () => import("@/components/PlaylistEditor.vue"),
+      component: () => import("@/pages/PlaylistEditor.vue"),
     }
   ],
 });

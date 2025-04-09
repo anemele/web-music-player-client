@@ -4,9 +4,8 @@ import { reactive, ref } from "vue";
 
 export const useMusicDataStore = defineStore("musicdata", () => {
     const playlistList = reactive<PlaylistInter[]>([]);
-    const musicList = reactive<MusicInter[]>([])
     const musicMap = new Map<number, MusicInter>();
-    const currentMusicList = reactive<MusicInter[]>([])
+    const currentMusicList = reactive<MusicInter[]>([]);
 
     function updateMusicList(playlist: PlaylistInter) {
         // 清空原有数据
@@ -30,14 +29,12 @@ export const useMusicDataStore = defineStore("musicdata", () => {
 
         let defaultPlaylist: PlaylistInter = {
             id: 0,
-            name: 'Default',
+            name: '[Default]',
             songs: [],
         }
         res.data.forEach((item: MusicInter) => {
             // 默认播放列表是全部音乐
             defaultPlaylist.songs.push(item.id)
-            // 全部音乐数据
-            musicList.push(item)
             // 音乐数据映射，方便播放列表切换时查找
             musicMap.set(item.id, item)
         });
@@ -64,7 +61,7 @@ export const useMusicDataStore = defineStore("musicdata", () => {
 
     return {
         playlistList,
-        musicList,
+        musicMap,
         currentMusicList,
         playlistIndex,
         musicIndex,

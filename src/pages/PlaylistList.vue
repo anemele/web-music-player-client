@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { deletePlaylist, postPlaylist } from '@/api';
+import PlaylistItem from '@/components/PlaylistItem.vue';
 import { useMusicDataStore } from '@/store/musicdata';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import PlaylistItem from './PlaylistItem.vue';
-import { deletePlaylist, postPlaylist } from '@/api';
 
 const musicDataStore = useMusicDataStore()
 const router = useRouter()
@@ -19,7 +19,12 @@ function selectPlaylist(idx: number) {
 }
 
 function createPlaylist() {
-    postPlaylist({ name: "新建歌单", songs: [1] }).then((res) => {
+    const name = prompt('请输入歌单名称：');
+    if (!name) { return }
+
+    // 这里默认选择第一首歌，因为传空列表后端会报错 400 bad request
+    const playlist = { name, songs: [0] }
+    postPlaylist(playlist).then((res) => {
         console.log(res.data)
         musicDataStore.playlistList.push(res.data)
         router.push({ path: '/playlist/' + res.data.id })
@@ -32,7 +37,9 @@ function removePlaylist() {
         console.log('no playlist selected')
         return
     }
-    if (!window.confirm('是否删除歌单：' + playlist.name)) { return }
+
+    if (!confirm('是否删除歌单：' + playlist.name)) { return }
+
     deletePlaylist(playlist.id).then((res) => {
         musicDataStore.playlistList.splice(activeIndex.value, 1)
         activeIndex.value = -1

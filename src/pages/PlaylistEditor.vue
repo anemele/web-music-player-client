@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { getPlaylist, putPlaylist, type PlaylistInter } from '@/api';
+import { getPlaylist, putPlaylist, type MusicInter, type PlaylistInter } from '@/api';
+import MusicItemContent from '@/components/MusicItemContent.vue';
 import { useMusicDataStore } from '@/store/musicdata';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import MusicItemContent from './MusicItemContent.vue';
 
-let playlistName = ref('')
+const musicDataStore = useMusicDataStore();
+const musicList = reactive<MusicInter[]>([]);
 const selectedItems = ref(new Set<number>());
 
 const playlistId = (function () {
@@ -19,13 +20,20 @@ const playlistId = (function () {
     return res
 })();
 
+let playlistName = ref('')
 getPlaylist(playlistId).then((res) => {
     const playlist: PlaylistInter = res.data
     playlistName.value = playlist.name
-    playlist.songs.forEach((id) => { selectedItems.value.add(id) })
+    playlist.songs.forEach((id) => {
+        selectedItems.value.add(id)
+        musicList.push(musicDataStore.musicMap.get(id) as MusicInter)
+    })
+    // all music id list
+    musicDataStore.playlistList[0].songs.forEach((id) => {
+        if (selectedItems.value.has(id)) { return }
+        musicList.push(musicDataStore.musicMap.get(id) as MusicInter)
+    })
 })
-
-const musicDataStore = useMusicDataStore();
 
 function toggleSelection(id: number) {
     if (selectedItems.value.has(id)) {
@@ -48,23 +56,24 @@ const submitSelection = () => {
     putPlaylist(newPlaylist).then((res) => {
         for (const item of musicDataStore.playlistList) {
             if (item.id === playlistId) {
+                const msg = `${item.name} (${item.songs.length}) -> ${newPlaylist.name} (${newPlaylist.songs.length})`;
+                console.log('更新歌单:', msg);
                 item.name = newPlaylist.name;
                 item.songs = newPlaylist.songs;
-                console.log('更新成功:', item.name, `(${item.songs.length})`, '->', newPlaylist.name, `(${newPlaylist.songs.length})`)
+                alert('更新成功：' + msg);
                 break;
             }
         }
 
-        // 此处应有交互提示。
         setTimeout(router.back, 1000)
     })
 };
 
 const selectAllorNone = () => {
-    if (selectedItems.value.size === musicDataStore.musicList.length) {
+    if (selectedItems.value.size === musicList.length) {
         selectedItems.value.clear();
     } else {
-        selectedItems.value = new Set(musicDataStore.musicList.map(item => item.id));
+        selectedItems.value = new Set(musicList.map(item => item.id));
     }
 };
 </script>
@@ -79,7 +88,7 @@ const selectAllorNone = () => {
         <!-- 列表内容 -->
         <div class="list-container">
             <ul>
-                <li v-for="item in musicDataStore.musicList" :key="item.id" @click="toggleSelection(item.id)">
+                <li v-for="item in musicList" :key="item.id" @click="toggleSelection(item.id)">
                     <input type="checkbox" v-model="selectedItems" :value="item.id" />
                     <MusicItemContent :title="item.title" :artist="item.artist" :album="item.album" />
                 </li>
@@ -90,7 +99,7 @@ const selectAllorNone = () => {
             <button @click="submitSelection">提交</button>
             <button @click="selectAllorNone">
                 {{
-                    selectedItems.size === musicDataStore.musicList.length ? "取消" : "全选"
+                    selectedItems.size === musicList.length ? "取消" : "全选"
                 }}
             </button>
         </footer>
@@ -137,9 +146,9 @@ const selectAllorNone = () => {
     flex: 1;
     overflow-y: auto;
     padding: 10px;
-    margin-top: 50px;
+    margin-top: 55px;
     /* 留出头部空间 */
-    margin-bottom: 30px;
+    margin-bottom: 35px;
     /* 留出底部空间 */
 }
 
