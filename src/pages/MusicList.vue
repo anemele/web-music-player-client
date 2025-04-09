@@ -50,6 +50,9 @@ function _changeMusic(next: boolean) {
             playerStore.reloadMusic()
             break;
         case PlayMode.LIST_LOOP:
+            if (musicDataStore.currentMusicList.length === 1) {
+                playerStore.reloadMusic()
+            }
             let idx = musicDataStore.currentMusicMap.get(playerStore.currentMusic.id);
             if (idx === undefined) {
                 idx = 0;
