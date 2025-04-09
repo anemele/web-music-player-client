@@ -46,14 +46,16 @@ const submitSelection = () => {
     };
 
     putPlaylist(newPlaylist).then((res) => {
-        musicDataStore.playlistList.forEach((item) => {
+        for (const item of musicDataStore.playlistList) {
             if (item.id === playlistId) {
+                item.name = newPlaylist.name;
+                item.songs = newPlaylist.songs;
                 console.log('更新成功:', item.name, `(${item.songs.length})`, '->', newPlaylist.name, `(${newPlaylist.songs.length})`)
-                item.name = newPlaylist.name
-                item.songs = newPlaylist.songs
+                break;
             }
-        })
-        musicDataStore.updateMusicList(musicDataStore.playlistList[playlistId])
+        }
+
+        // 此处应有交互提示。
         setTimeout(router.back, 1000)
     })
 };

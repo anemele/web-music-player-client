@@ -2,7 +2,7 @@
 import { useMusicDataStore } from "@/store/musicdata";
 import { PlayMode, usePlayModeStore, useShowStore } from "@/store/state";
 import { Events, emitter } from '@/tools/emit';
-import { ref } from 'vue';
+import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import MusicItem from './MusicItem.vue';
 import PlaylistItem from './PlaylistItem.vue';
@@ -11,19 +11,17 @@ const musicDataStore = useMusicDataStore();
 const playModeStore = usePlayModeStore();
 const showStore = useShowStore();
 
-let playlistIndex = ref(0);
+let { playlistIndex, musicIndex } = storeToRefs(musicDataStore);
+
 function selectPlaylist(index: number) {
     if (playlistIndex.value === index) { return }
     playlistIndex.value = index;
     musicDataStore.updateMusicList(musicDataStore.playlistList[playlistIndex.value])
-    // 隐藏播放列表
-    // showStore.toggleShow()
 }
 
-let activeIndex = ref(-1)
 function selectMusic(idx: number) {
-    if (activeIndex.value === idx) { return }
-    activeIndex.value = idx;
+    if (musicIndex.value === idx) { return }
+    musicIndex.value = idx;
     document.title = musicDataStore.currentMusicList[idx].title + ' - ' + musicDataStore.currentMusicList[idx].artist
     emitter.emit(Events.SendMusic, musicDataStore.currentMusicList[idx])
 }
@@ -42,8 +40,8 @@ function changeMusic(next: boolean) {
             break;
         case PlayMode.LIST_LOOP:
             let idx: number;
-            if (next) { idx = (activeIndex.value + 1) % musicDataStore.currentMusicList.length }
-            else { idx = (activeIndex.value - 1 + musicDataStore.currentMusicList.length) % musicDataStore.currentMusicList.length }
+            if (next) { idx = (musicIndex.value + 1) % musicDataStore.currentMusicList.length }
+            else { idx = (musicIndex.value - 1 + musicDataStore.currentMusicList.length) % musicDataStore.currentMusicList.length }
             selectMusic(idx)
             break;
         default:
@@ -72,7 +70,7 @@ function routePlaylist() {
 <template>
     <div>
         <li class="music-item" v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id"
-            @click="selectMusic(index)" :class="{ current: activeIndex === index }">
+            @click="selectMusic(index)" :class="{ current: musicIndex === index }">
             <MusicItem :item="item" :index="index" />
         </li>
     </div>

@@ -1,6 +1,6 @@
 import { getMusicList, getPlaylistList, type MusicInter, type PlaylistInter } from "@/api";
 import { defineStore } from "pinia";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 export const useMusicDataStore = defineStore("musicdata", () => {
     const playlistList = reactive<PlaylistInter[]>([]);
@@ -59,10 +59,15 @@ export const useMusicDataStore = defineStore("musicdata", () => {
 
     setTimeout(init, 100)
 
+    let playlistIndex = ref(0);
+    let musicIndex = ref(-1);
+
     return {
         playlistList,
         musicList,
         currentMusicList,
+        playlistIndex,
+        musicIndex,
         updateMusicList,
     }
 })
