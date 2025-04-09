@@ -3,6 +3,7 @@ import { useMusicDataStore } from "@/store/musicdata";
 import { PlayMode, usePlayModeStore, useShowStore } from "@/store/state";
 import { Events, emitter } from '@/tools/emit';
 import { storeToRefs } from "pinia";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import MusicItem from './MusicItem.vue';
 import PlaylistItem from './PlaylistItem.vue';
@@ -12,6 +13,7 @@ const playModeStore = usePlayModeStore();
 const showStore = useShowStore();
 
 const { playlistIndex, musicIndex } = storeToRefs(musicDataStore);
+const musicTitle = ref('标题');
 
 function selectPlaylist(index: number) {
     if (playlistIndex.value === index) { return }
@@ -22,8 +24,10 @@ function selectPlaylist(index: number) {
 function selectMusic(idx: number) {
     if (musicIndex.value === idx) { return }
     musicIndex.value = idx;
-    document.title = musicDataStore.currentMusicList[idx].title + ' - ' + musicDataStore.currentMusicList[idx].artist
-    emitter.emit(Events.SendMusic, musicDataStore.currentMusicList[idx])
+    const currentMusic = musicDataStore.currentMusicList[idx]
+    musicTitle.value = currentMusic.title + ' - ' + currentMusic.artist
+    document.title = musicTitle.value
+    emitter.emit(Events.SendMusic, currentMusic)
 }
 
 function randMusic() {
@@ -72,17 +76,26 @@ function routePlaylist() {
 </script>
 
 <template>
-    <div>
-        <li class="music-item" v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id"
-            @click="selectMusic(index)" :class="{ current: musicIndex === index }">
-            <MusicItem :item="item" :index="index" />
-        </li>
+    <div class="music-title">
+        <span>{{ musicTitle }}</span>
     </div>
+
+    <div class="music-list">
+        <ul>
+            <li class="music-item" v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id"
+                @click="selectMusic(index)" :class="{ current: musicIndex === index }">
+                <MusicItem :item="item" :index="index" />
+            </li>
+        </ul>
+    </div>
+
     <div v-show="showStore.playlistShow" class="playlist">
+        <!-- <ul> -->
         <li class="playlist-item" v-for="(item, index) in musicDataStore.playlistList" :key="item.id"
             @click="selectPlaylist(index)" :class="{ current: playlistIndex === index }">
             <PlaylistItem :name="item.name" :count="item.songs.length" />
         </li>
+        <!-- </ul> -->
         <div class="edit-playlist">
             <button @click="editPlaylist"> edit </button>
             <button @click="routePlaylist"> more </button>
@@ -91,8 +104,34 @@ function routePlaylist() {
 </template>
 
 <style scoped>
+.music-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    padding: 5px;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-size: 24px;
+    height: 50px;
+    background-color: #eee;
+}
+
+.music-title span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .current {
     background-color: #cccc;
+}
+
+.music-list {
+    margin-top: 60px;
+    margin-bottom: 110px;
 }
 
 .music-item {

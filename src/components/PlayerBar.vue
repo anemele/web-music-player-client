@@ -122,7 +122,6 @@ const showStore = useShowStore()
     align-items: center;
     z-index: 999;
     flex-direction: column;
-    opacity: 0.9;
 }
 
 /* 进度条样式    */
