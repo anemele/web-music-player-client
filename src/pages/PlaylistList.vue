@@ -8,14 +8,14 @@ import { useRouter } from 'vue-router';
 const musicDataStore = useMusicDataStore()
 const router = useRouter()
 
-const activeIndex = ref(-1)
-function selectPlaylist(idx: number) {
-    if (activeIndex.value !== idx) {
-        activeIndex.value = idx
+const activeID = ref(-1)
+function selectPlaylist(id: number) {
+    if (activeID.value !== id) {
+        activeID.value = id
         return
     }
 
-    musicDataStore.playlistIndex = idx
+    Object.assign(musicDataStore.currentPlaylist, musicDataStore.playlistMap.get(id)!);
     router.push({ path: '/playlist/edit' })
 }
 
@@ -28,13 +28,13 @@ function createPlaylist() {
     postPlaylist(playlist).then((res) => {
         console.log(res.data)
         musicDataStore.playlistList.push(res.data)
-        musicDataStore.playlistIndex = musicDataStore.playlistList.length - 1
+        musicDataStore.currentPlaylist = res.data
         router.push({ path: '/playlist/edit' })
     })
 }
 
 function removePlaylist() {
-    const playlist = musicDataStore.playlistList[activeIndex.value]
+    const playlist = musicDataStore.playlistList[activeID.value]
     if (!playlist) {
         console.log('no playlist selected')
         return
@@ -43,8 +43,8 @@ function removePlaylist() {
     if (!confirm('是否删除歌单：' + playlist.name)) { return }
 
     deletePlaylist(playlist.id).then((res) => {
-        musicDataStore.playlistList.splice(activeIndex.value, 1)
-        activeIndex.value = -1
+        musicDataStore.playlistList.splice(activeID.value, 1)
+        activeID.value = -1
     })
 }
 </script>
@@ -52,10 +52,9 @@ function removePlaylist() {
 <template>
     <div class="list-container">
         <ul>
-            <li class="music-item" v-for="(item, index) in musicDataStore.playlistList.slice(1)" :key="item.id"
-                @click="selectPlaylist(index + 1)">
-                <PlaylistItem :name="item.name" :count="item.songs.length"
-                    :class="{ current: activeIndex === index + 1 }" />
+            <li class="music-item" v-for="item in musicDataStore.playlistList.slice(1)" :key="item.id"
+                @click="selectPlaylist(item.id)">
+                <PlaylistItem :name="item.name" :count="item.songs.length" :class="{ current: activeID === item.id }" />
             </li>
         </ul>
     </div>

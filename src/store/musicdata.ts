@@ -1,21 +1,30 @@
 import { getMusicList, getPlaylistList, type MusicInter, type PlaylistInter } from "@/api";
 import { defineStore } from "pinia";
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 
 export const useMusicDataStore = defineStore("musicdata", () => {
+    const playlistMap = new Map<number, PlaylistInter>();
     const playlistList = reactive<PlaylistInter[]>([]);
     const musicMap = new Map<number, MusicInter>();
+    const musicList = reactive<number[]>([]);
+
+    const currentPlaylist = reactive<PlaylistInter>({
+        id: 0,
+        name: '',
+        songs: [],
+    });
     const currentMusicList = reactive<MusicInter[]>([]);
-
-    function updateMusicList(playlist: PlaylistInter) {
-        // 清空原有数据
-        currentMusicList.length = 0
-
-        playlist.songs.forEach((id: number) => {
-            const music = musicMap.get(id)
-            if (music) {
-                currentMusicList.push(music)
-            }
+    function updateCurrentMusicList() {
+        currentMusicList.length = 0;
+        currentPlaylist.songs.forEach((id: number) => {
+            currentMusicList.push(musicMap.get(id)!)
+        })
+    }
+    const currentMusicMap = new Map<number, number>()
+    function updateCurrentMusicMap() {
+        currentMusicMap.clear()
+        currentPlaylist.songs.forEach((id: number, index: number) => {
+            currentMusicMap.set(id, index)
         })
     }
 
@@ -27,19 +36,23 @@ export const useMusicDataStore = defineStore("musicdata", () => {
             return;
         }
 
-        const defaultPlaylist: PlaylistInter = {
+        res.data.forEach((item: MusicInter) => {
+            musicMap.set(item.id, item)
+            musicList.push(item.id)
+        });
+        const defaultPlaylist = {
             id: 0,
             name: '[Default]',
-            songs: [],
+            songs: musicList,
         }
-        res.data.forEach((item: MusicInter) => {
-            // 默认播放列表是全部音乐
-            defaultPlaylist.songs.push(item.id)
-            // 音乐数据映射，方便播放列表切换时查找
-            musicMap.set(item.id, item)
-        });
-        playlistList.length = 0
+        playlistMap.set(defaultPlaylist.id, defaultPlaylist)
         playlistList.push(defaultPlaylist)
+
+        currentPlaylist.id = defaultPlaylist.id;
+        currentPlaylist.name = defaultPlaylist.name;
+        currentPlaylist.songs = defaultPlaylist.songs;
+        updateCurrentMusicList()
+        updateCurrentMusicMap()
 
         // 获取全部播放列表
         res = await getPlaylistList();
@@ -47,47 +60,30 @@ export const useMusicDataStore = defineStore("musicdata", () => {
             return;
         }
         res.data.forEach((item: PlaylistInter) => {
+            playlistMap.set(item.id, item);
             playlistList.push(item);
         });
-
-        // 默认播放列表，即全部音乐
-        updateMusicList(defaultPlaylist);
     }
 
     setTimeout(init, 100)
 
-    const playlistIndex = ref(0);
-    const musicIndex = ref(-1);
-
-    function getCurrentPlaylist() {
-        return playlistList[playlistIndex.value];
-    }
-
-    function getCurrentMusic() {
-        return currentMusicList[musicIndex.value];
-    }
-
-    const currentTitle = ref('');
-    function updateCurrentTitle() {
-        const music = getCurrentMusic();
-        if (music) {
-            currentTitle.value = `${music.title} - ${music.artist}`
-        } else {
-            currentTitle.value = '';
-        }
-        return currentTitle.value;
+    function randMusic() {
+        const idx = Math.floor(Math.random() * currentMusicList.length)
+        return currentMusicList[idx]
     }
 
     return {
         playlistList,
+        playlistMap,
+        musicList,
         musicMap,
+
+        currentPlaylist,
         currentMusicList,
-        playlistIndex,
-        musicIndex,
-        updateMusicList,
-        getCurrentPlaylist,
-        getCurrentMusic,
-        currentTitle,
-        updateCurrentTitle,
+        updateCurrentMusicList,
+        currentMusicMap,
+        updateCurrentMusicMap,
+
+        randMusic: randMusic,
     }
 })

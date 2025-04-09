@@ -7,21 +7,18 @@ import { useRouter } from 'vue-router';
 
 const musicDataStore = useMusicDataStore();
 const musicList = reactive<MusicInter[]>([]);
+// 此处使用 ref
 const selectedItems = ref(new Set<number>());
 
 const playlistName = ref('')
 const disabled = ref(true)
 
 function getPlaylist(): PlaylistInter | null {
-    if (musicDataStore.playlistIndex === 0) {
+    if (musicDataStore.currentPlaylist.id === 0) {
         console.log('默认歌单不能编辑')
         return null
     }
-    const playlist = musicDataStore.playlistList[musicDataStore.playlistIndex]
-    if (!playlist) {
-        console.log('歌单不存在')
-        return null
-    }
+    const playlist = musicDataStore.currentPlaylist
 
     playlistName.value = playlist.name
     playlist.songs.forEach((id) => {
@@ -52,11 +49,15 @@ const router = useRouter()
 const submitSelection = () => {
     // console.log('提交选中的项目:', selectedItems.value);
     if (playlist === null) { return }
+    if (selectedItems.value.size === 0) {
+        alert('请选择至少一首歌曲');
+        return;
+    }
 
     const newPlaylist = {
         id: playlist.id,
         name: playlistName.value,
-        songs: Array.from(selectedItems.value)
+        songs: Array.from(selectedItems.value).sort()
     };
 
     putPlaylist(newPlaylist).then((res) => {
@@ -72,6 +73,8 @@ const submitSelection = () => {
         }
 
         setTimeout(router.back, 1000)
+    }).catch((err) => {
+        console.log('更新歌单失败:', err);
     })
 };
 

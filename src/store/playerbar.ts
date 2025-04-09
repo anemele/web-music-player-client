@@ -13,26 +13,21 @@ const PlayModeList = [
     PlayMode.SINGLE_LOOP,
 ];
 
-let playModeIndex = 0;
+const playModeIndex = ref(0);
 
-
-export const useShowStore = defineStore('show', () => {
+export const usePlayerbarStore = defineStore('playerbar', () => {
     const playlistShow = ref(false)
 
     function toggleShow() {
         playlistShow.value = !playlistShow.value;
     }
 
-    return { playlistShow, toggleShow };
-});
-
-export const usePlayModeStore = defineStore('playmode', () => {
     const playMode = ref(PlayMode.RANDOM)
 
     function togglePlayMode() {
-        playModeIndex = (playModeIndex + 1) % PlayModeList.length;
-        playMode.value = PlayModeList[playModeIndex];
+        playModeIndex.value = (playModeIndex.value + 1) % PlayModeList.length;
+        playMode.value = PlayModeList[playModeIndex.value];
     }
 
-    return { playMode, togglePlayMode };
+    return { playlistShow, toggleShow, playMode, togglePlayMode };
 })

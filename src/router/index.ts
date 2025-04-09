@@ -9,7 +9,7 @@ const router = createRouter({
     },
     {
       path: "/music",
-      component: () => import("@/pages/Music.vue"),
+      component: () => import("@/pages/MusicList.vue"),
     },
     {
       path: "/playlist",
