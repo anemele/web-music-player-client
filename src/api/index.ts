@@ -11,7 +11,7 @@ export interface PlaylistInter {
 }
 
 export function getPlaylist(id: number) {
-  return request.get("/list/" + id);
+  return request.get("/list/" + id + "/");
 }
 
 // POST does not need `id`
@@ -23,18 +23,18 @@ export function postPlaylist(data: { name: string; songs: number[] }) {
 }
 
 export function putPlaylist(data: PlaylistInter) {
-  return request.put("/list/" + data.id, {
+  return request.put("/list/" + data.id + "/", {
     name: data.name,
     songs: data.songs,
   });
 }
 
 export function deletePlaylist(id: number) {
-  return request.delete("/list/" + id);
+  return request.delete("/list/" + id + "/");
 }
 
 export function getPlaylistList() {
-  return request.get("/list");
+  return request.get("/list/");
 }
 
 export interface MusicInter {
@@ -46,11 +46,11 @@ export interface MusicInter {
 }
 
 export function getMusic(id: number) {
-  return request.get("/music/" + id);
+  return request.get("/music/" + id + "/");
 }
 
 export function getMusicList() {
-  return request.get("/music");
+  return request.get("/music/");
 }
 
 export function getMusicFile(id: number) {

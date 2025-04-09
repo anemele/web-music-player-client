@@ -6,7 +6,7 @@ client and the server, we will use RESTful API.
 ### get playlists
 
 - method: `GET`
-- path: `/api/list`
+- path: `/api/list/`
 - description: Get the all playlists
 - response:
 
@@ -27,7 +27,7 @@ client and the server, we will use RESTful API.
 ### add playlist
 
 - method: `POST`
-- path: `/api/list`
+- path: `/api/list/`
 - description: Add a new playlist
 - request:
 
@@ -60,7 +60,7 @@ client and the server, we will use RESTful API.
 ### get playlist detail
 
 - method: `GET`
-- path: `/api/list/{id}`
+- path: `/api/list/{id}/`
 - description: Get the detail of a playlist
 - response:
 
@@ -79,7 +79,7 @@ client and the server, we will use RESTful API.
 ### update playlist detail
 
 - method: `PUT`
-- path: `/api/list/{id}`
+- path: `/api/list/{id}/`
 - description: Update a playlist
 - request:
 
@@ -111,13 +111,13 @@ client and the server, we will use RESTful API.
 ### delete playlist
 
 - method: `DELETE`
-- path: `/api/list/{id}`
+- path: `/api/list/{id}/`
 - description: Delete a playlist
 
 ### get music list
 
 - method: `GET`
-- path: `/api/music`
+- path: `/api/music/`
 - description: Get the all music files
 - response:
 
@@ -137,7 +137,7 @@ client and the server, we will use RESTful API.
 ### add music
 
 - method: `POST`
-- path: `/api/music`
+- path: `/api/music/`
 - description: Add a new music file
 - request:
 
@@ -165,7 +165,7 @@ client and the server, we will use RESTful API.
 ### get music detail
 
 - method: `GET`
-- path: `/api/music/{id}`
+- path: `/api/music/{id}/`
 - description: Get the detail of a music file
 - response:
 
@@ -184,7 +184,7 @@ client and the server, we will use RESTful API.
 `WARNING: not recommended to use this api`
 
 - method: `PUT`
-- path: `/api/music/{id}`
+- path: `/api/music/{id}/`
 - description: Update a music file
 - request:
 
@@ -213,7 +213,7 @@ client and the server, we will use RESTful API.
 ### delete music
 
 - method: `DELETE`
-- path: `/api/music/{id}`
+- path: `/api/music/{id}/`
 - description: Delete a music file
 
 ### get music file
