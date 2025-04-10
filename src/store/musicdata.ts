@@ -17,7 +17,12 @@ export const useMusicDataStore = defineStore("musicdata", () => {
     function updateCurrentMusicList() {
         currentMusicList.length = 0;
         currentPlaylist.songs.forEach((id: number) => {
-            currentMusicList.push(musicMap.get(id)!)
+            const music = musicMap.get(id);
+            if (music === undefined) {
+                // should never happen
+                return;
+            }
+            currentMusicList.push(music)
         })
     }
     const currentMusicMap = new Map<number, number>()
@@ -48,9 +53,7 @@ export const useMusicDataStore = defineStore("musicdata", () => {
         playlistMap.set(defaultPlaylist.id, defaultPlaylist)
         playlistList.push(defaultPlaylist)
 
-        currentPlaylist.id = defaultPlaylist.id;
-        currentPlaylist.name = defaultPlaylist.name;
-        currentPlaylist.songs = defaultPlaylist.songs;
+        Object.assign(currentPlaylist, defaultPlaylist)
         updateCurrentMusicList()
         updateCurrentMusicMap()
 

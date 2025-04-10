@@ -121,21 +121,17 @@ function changeCurrentTime(event: MouseEvent) {
     </div>
 
     <div class="music-list">
-        <!-- <ul> -->
         <li class="music-item" v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id"
             @click="selectMusic(item)" :class="{ current: playerStore.currentMusic.id === item.id }">
             <MusicItem :item="item" :index="index" />
         </li>
-        <!-- </ul> -->
     </div>
 
     <div v-show="playerbarStore.playlistShow" class="playlist">
-        <!-- <ul> -->
-        <li class="playlist-item" v-for="item in musicDataStore.playlistList" :key="item.id"
+        <div class="playlist-item" v-for="item in musicDataStore.playlistList" :key="item.id"
             @click="selectPlaylist(item.id)" :class="{ current: musicDataStore.currentPlaylist.id === item.id }">
             <PlaylistItem :name="item.name" :count="item.songs.length" />
-        </li>
-        <!-- </ul> -->
+        </div>
         <div class="edit-playlist">
             <button @click="editPlaylist"> edit </button>
             <button @click="routePlaylist"> more </button>
@@ -230,7 +226,7 @@ function changeCurrentTime(event: MouseEvent) {
     left: 0;
     right: 0;
     width: fit-content;
-    background-color: #fff;
+    background-color: white;
 
     display: flex;
     flex-direction: column;
@@ -238,7 +234,8 @@ function changeCurrentTime(event: MouseEvent) {
 }
 
 .playlist-item {
-    display: flex;
+    box-sizing: border-box;
+    list-style: none;
     color: #999;
 }
 

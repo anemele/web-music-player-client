@@ -15,12 +15,15 @@ function selectPlaylist(id: number) {
         return
     }
 
-    Object.assign(musicDataStore.currentPlaylist, musicDataStore.playlistMap.get(id)!);
+    const playlist = musicDataStore.playlistMap.get(id);
+    if (playlist === undefined) { return }
+
+    Object.assign(musicDataStore.currentPlaylist, playlist);
     router.push({ path: '/playlist/edit' })
 }
 
 function createPlaylist() {
-    const name = prompt('请输入歌单名称：');
+    const name = prompt('请输入歌单名称：')?.trim();
     if (!name) { return }
 
     // 这里默认选择第一首歌，因为传空列表后端会报错 400 bad request
