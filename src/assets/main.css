@@ -1,0 +1,4 @@
+/* 去除移动端点击显示透明方块背景 */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
