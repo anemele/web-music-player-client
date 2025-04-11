@@ -55,7 +55,7 @@ function removePlaylist() {
 <template>
     <div class="app-container">
         <header class="header">
-            <span> {{ activeID === -1 ? '' : musicDataStore.playlistList[activeID].name }}</span>
+            <span> {{ musicDataStore.playlistList[activeID]?.name }}</span>
         </header>
         <div class="list-container">
             <PlaylistItem class="playlist-item" :class="{ current: activeID === item.id }"
