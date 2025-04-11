@@ -1,4 +1,5 @@
-import { getMusicFile, type MusicInter, type PlaylistInter } from "@/api";
+import { getMusicFile, type MusicInter } from "@/api";
+import { joinTitleAndArtist } from "@/tools";
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 
@@ -15,7 +16,10 @@ export const usePlayerStore = defineStore("player", () => {
         currentTime.value = player.currentTime
     }
 
-    function changeMusic() {
+    function selectMusic(music: MusicInter) {
+        if (currentMusic.id === music.id) { return }
+        Object.assign(currentMusic, music);
+        document.title = joinTitleAndArtist(currentMusic);
         if (!player.paused) { player.pause() }
         currentTime.value = 0
         player.src = getMusicFile(currentMusic.id)
@@ -39,7 +43,7 @@ export const usePlayerStore = defineStore("player", () => {
         currentMusic,
         currentTime,
         playAndPause,
-        changeMusic,
+        selectMusic,
         reloadMusic,
     }
 })

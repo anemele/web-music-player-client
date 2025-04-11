@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { putPlaylist, type MusicInter, type PlaylistInter } from '@/api';
 import MusicItemContent from '@/components/MusicItemContent.vue';
-import { useMusicDataStore } from '@/store/musicdata';
+import { useMusicDataStore } from '@/stores/musicdata';
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -116,7 +116,7 @@ const selectAllorNone = () => {
 </template>
 
 <style scoped lang="less">
-@import './playlist';
+@import '@/assets/less/playlist';
 
 .app-container {
     .header {

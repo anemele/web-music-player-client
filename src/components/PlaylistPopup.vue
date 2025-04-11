@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useMusicDataStore } from '@/store/musicdata';
+import { useMusicDataStore } from '@/stores/musicdata';
 import { useRouter } from 'vue-router';
 import PlaylistItem from './PlaylistItem.vue';
 

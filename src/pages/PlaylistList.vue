@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { deletePlaylist, postPlaylist } from '@/api';
 import PlaylistItem from '@/components/PlaylistItem.vue';
-import { useMusicDataStore } from '@/store/musicdata';
+import { useMusicDataStore } from '@/stores/musicdata';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -70,7 +70,7 @@ function removePlaylist() {
 </template>
 
 <style scoped lang="less">
-@import './playlist';
+@import '@/assets/less/playlist';
 
 .current {
     background-color: #c4e5e4;
@@ -92,8 +92,7 @@ function removePlaylist() {
         padding: 10px;
 
         .playlist-item {
-            margin: 10px;
-            padding: 10px;
+            margin: 5px 10px;
             border-color: rgb(152, 62, 155);
         }
     }

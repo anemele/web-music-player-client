@@ -1,180 +1,38 @@
 <script lang="ts" setup>
-import type { MusicInter } from '@/api';
 import MusicItem from '@/components/MusicItem.vue';
+import PlayerBar from '@/components/PlayerBar.vue';
 import PlaylistPopup from '@/components/PlaylistPopup.vue';
-import { useMusicDataStore } from "@/store/musicdata";
-import { usePlayerStore } from "@/store/player";
-import { PlayMode, usePlayerbarStore } from "@/store/playerbar";
-import { convertSecondToTime, joinTitleAndArtist } from "@/tools";
+import { useMusicDataStore } from "@/stores/musicdata";
+import { usePlayerStore } from "@/stores/player";
+import { usePlayerbarStore } from "@/stores/playerbar";
+import { joinTitleAndArtist } from "@/tools";
 
 const musicDataStore = useMusicDataStore();
 const playerbarStore = usePlayerbarStore();
 const playerStore = usePlayerStore();
 
-
-function selectMusic(music: MusicInter) {
-    if (playerStore.currentMusic.id === music.id) { return }
-    Object.assign(playerStore.currentMusic, music);
-    playerStore.changeMusic()
-    document.title = joinTitleAndArtist(playerStore.currentMusic)
-}
-
-function _changeMusic(next: boolean) {
-    switch (playerbarStore.playMode) {
-        case PlayMode.RANDOM:
-            if (musicDataStore.currentMusicList.length === 1) {
-                playerStore.reloadMusic()
-            } else {
-                while (true) {
-                    const music = musicDataStore.randMusic()
-                    if (music.id !== playerStore.currentMusic.id) {
-                        selectMusic(music)
-                        break;
-                    }
-                }
-            }
-            break;
-        case PlayMode.SINGLE_LOOP:
-            playerStore.reloadMusic()
-            break;
-        case PlayMode.LIST_LOOP:
-            if (musicDataStore.currentMusicList.length === 1) {
-                playerStore.reloadMusic()
-            }
-            let idx = musicDataStore.currentMusicMap.get(playerStore.currentMusic.id);
-            if (idx === undefined) {
-                idx = 0;
-            } else if (next) {
-                idx++;
-                idx %= musicDataStore.currentMusicList.length
-            } else {
-                idx += musicDataStore.currentMusicList.length - 1;
-                idx %= musicDataStore.currentMusicList.length
-            }
-            const music = musicDataStore.currentMusicList[idx]
-            selectMusic(music)
-            break;
-        default:
-            // should never happen
-            console.error('unknown play mode:', playerbarStore.playMode)
-            break;
-    }
-}
-
-function changeMusic(next: boolean) {
-    setTimeout(() => { _changeMusic(next) }, 100)
-}
-
-playerStore.player.onended = () => {
-    changeMusic(true)
-}
-
-function changeCurrentTime(event: MouseEvent) {
-    // 用选择器获取目标，不要用 event ，因为 event 可能是冒泡事件
-    const progressContrainer = document.querySelector('.progress-container')
-    // 获取进度条容器宽度，此处应该不会为 undefined
-    const width = progressContrainer?.clientWidth;
-    // console.log(width)
-    if (width === undefined) {
-        alert('error: progress container width is undefined')
-        return
-    }
-    // 获取点击位置相对于进度条容器左侧的距离
-    const clickX = event.offsetX;
-    // console.log(clickX)
-    // 设置当前播放时间
-    playerStore.player.currentTime = (clickX / width) * playerStore.currentMusic.duration;
-}
 </script>
 
 <template>
-    <div class="titlebar">
-        <span>{{ joinTitleAndArtist(playerStore.currentMusic) }}</span>
-    </div>
+    <div class="app-container">
+        <div class="titlebar">
+            <span>{{ joinTitleAndArtist(playerStore.currentMusic) }}</span>
+        </div>
 
-    <div class="music-container">
         <div class="music-list">
             <MusicItem :class="{ current: playerStore.currentMusic.id === item.id }"
                 v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id" :item="item" :index="index"
-                @click="selectMusic(item)" />
+                @click="playerStore.selectMusic(item)" />
         </div>
-    </div>
 
-    <PlaylistPopup class="playlistpopup" v-show="playerbarStore.playlistShow" />
+        <PlayerBar class="playerbar" />
 
-    <div class="player-bar">
-        <div class="progress">
-            <i>{{ convertSecondToTime(playerStore.currentTime) }}</i>
-            <div class="progress-container" @click="changeCurrentTime">
-                <div class="progress-bar"
-                    :style="{ width: `${(playerStore.currentTime / playerStore.currentMusic.duration) * 100}%` }"></div>
-            </div>
-            <i>{{ convertSecondToTime(playerStore.currentMusic.duration) }}</i>
-        </div>
-        <div class="controls">
-            <div class="left-controls">
-                <button @click="changeMusic(false)">
-                    <img src="@/assets/image/btn-prev.svg" alt="">
-                </button>
-                <button @click="playerStore.playAndPause">
-                    <img v-show="playerStore.player.paused" src="@/assets/image/btn-play.svg" alt="">
-                    <img v-show="!playerStore.player.paused" src="@/assets/image/btn-pause.svg" alt="">
-                </button>
-                <button @click="changeMusic(true)">
-                    <img src="@/assets/image/btn-next.svg" alt="">
-                </button>
-            </div>
-            <div class="right-controls">
-                <button @click="playerbarStore.togglePlayMode">
-                    <img v-show="playerbarStore.playMode === PlayMode.RANDOM" src="@/assets/image/btn-mode-random.svg"
-                        alt="">
-                    <img v-show="playerbarStore.playMode === PlayMode.LIST_LOOP"
-                        src="@/assets/image/btn-mode-list-cycle.svg" alt="">
-                    <img v-show="playerbarStore.playMode === PlayMode.SINGLE_LOOP"
-                        src="@/assets/image/btn-mode-single-cycle.svg" alt="">
-                </button>
-                <button @click="playerbarStore.toggleShow">
-                    <img src="@/assets/image/btn-list.svg" alt="">
-                </button>
-            </div>
-        </div>
+        <PlaylistPopup class="playlistpopup" v-show="playerbarStore.playlistShow" />
     </div>
 </template>
 
 <style scoped lang="less">
-@fixed-z-index: 999;
-
-@main-bg-color: lightsalmon;
-@titlebar-fg: white;
-@titlebar-bg: @main-bg-color;
-@titlebar-height: 50px;
-
-.titlebar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    padding: 5px;
-    z-index: @fixed-z-index;
-    top: 0;
-    left: 0;
-    right: 0;
-    font-size: 24px;
-    height: @titlebar-height;
-    color: @titlebar-fg;
-    background-color: @titlebar-bg;
-
-    span {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        margin-left: 15px;
-        margin-right: 15px;
-
-    }
-
-    cursor: default;
-}
+@import "@/assets/less/var.less";
 
 @seleted-item-bg: #dcb;
 @seleted-item-fg: #89a;
@@ -184,122 +42,72 @@ function changeCurrentTime(event: MouseEvent) {
     color: @seleted-item-fg;
 }
 
-@music-list-additional-margin: 10px;
-@music-list-bg: #fed;
+@main-bg-color: #fed;
 @music-list-item-fg: #345;
+@titlebar-fg: white;
+@titlebar-bg: lightsalmon;
+@titlebar-height: 50px;
+@playerbar-fg: white;
+@playerbar-bg: lightsalmon;
+@playerbar-height: 100px;
 
-.music-container {
+.app-container {
     display: flex;
     flex-direction: column;
-    background-color: @music-list-bg;
+    background-color: @main-bg-color;
     height: 100vh;
 
+    .titlebar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        padding: 5px;
+        z-index: @fixed-z-index;
+        top: 0;
+        left: 0;
+        right: 0;
+        font-size: 24px;
+        height: @titlebar-height;
+        color: @titlebar-fg;
+        background-color: @titlebar-bg;
+
+        span {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-left: 15px;
+            margin-right: 15px;
+
+        }
+
+        cursor: default;
+    }
+
     .music-list {
-        margin-top: @titlebar-height + @music-list-additional-margin;
-        margin-bottom: @playerbar-height + @music-list-additional-margin;
+        margin-top: @titlebar-height;
+        margin-bottom: @playerbar-height;
         color: @music-list-item-fg;
         overflow-y: auto;
     }
-}
 
-.playlistpopup {
-    position: fixed;
-    align-items: center;
-    margin: auto;
-    left: 0;
-    right: 0;
-    bottom: 25%;
-}
-
-@playerbar-bg: @main-bg-color;
-@playerbar-fg: white;
-@playerbar-height: 100px;
-
-.player-bar {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: @playerbar-height;
-    background-color: @playerbar-bg;
-    color: @playerbar-fg;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: @fixed-z-index;
-    flex-direction: column;
-
-    /* 进度条样式 */
-    .progress {
-        width: 90%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 10px;
-
-        /* 进度条容器样式 */
-        .progress-container {
-            width: 100%;
-            height: 10px;
-            margin-left: 10px;
-            margin-right: 10px;
-            background-color: #afd3f7;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* 进度条样式 */
-        .progress-bar {
-            height: 100%;
-            background-color: #4098f7;
-            border-radius: 5px;
-            width: 0%;
-        }
+    .playerbar {
+        position: fixed;
+        z-index: @fixed-z-index;
+        bottom: 0;
+        width: 100%;
+        height: @playerbar-height;
+        background-color: @playerbar-bg;
+        color: @playerbar-fg;
     }
 
-    /* 控制按钮样式 */
-    .controls {
-        display: flex;
-        justify-content: space-between;
+    .playlistpopup {
+        position: fixed;
         align-items: center;
-        width: 90%;
-        margin-top: 10px;
-
-        /* 左侧控制按钮样式 */
-        .left-controls {
-            display: flex;
-            justify-content: left;
-            align-items: center;
-            width: 100%;
-        }
-
-        /* 右侧控制按钮样式 */
-        .right-controls {
-            display: flex;
-            justify-content: right;
-            align-items: center;
-            width: 100%;
-        }
-
-        /* 控制按钮样式 */
-        button {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            margin: 5px;
-
-            &:focus {
-                outline: none;
-            }
-
-            &:active {
-                transform: scale(0.9);
-            }
-
-            img {
-                width: 30px;
-                height: 30px;
-            }
-        }
+        margin: auto;
+        left: 0;
+        right: 0;
+        bottom: 25%;
     }
 }
 </style>
