@@ -96,7 +96,6 @@ function routePlaylist() {
     router.push({ path: '/playlist' })
 }
 
-
 function changeCurrentTime(event: MouseEvent) {
     // 用选择器获取目标，不要用 event ，因为 event 可能是冒泡事件
     const progressContrainer = document.querySelector('.progress-container')
@@ -116,22 +115,22 @@ function changeCurrentTime(event: MouseEvent) {
 </script>
 
 <template>
-    <div class="music-title">
+    <div class="titlebar">
         <span>{{ joinTitleAndArtist(playerStore.currentMusic) }}</span>
     </div>
 
-    <div class="music-list">
-        <li class="music-item" v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id"
-            @click="selectMusic(item)" :class="{ current: playerStore.currentMusic.id === item.id }">
-            <MusicItem :item="item" :index="index" />
-        </li>
+    <div class="music-container">
+        <div class="music-list">
+            <MusicItem :class="{ current: playerStore.currentMusic.id === item.id }"
+                v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id" :item="item" :index="index"
+                @click="selectMusic(item)" />
+        </div>
     </div>
 
     <div v-show="playerbarStore.playlistShow" class="playlist">
-        <div class="playlist-item" v-for="item in musicDataStore.playlistList" :key="item.id"
-            @click="selectPlaylist(item.id)" :class="{ current: musicDataStore.currentPlaylist.id === item.id }">
-            <PlaylistItem :name="item.name" :count="item.songs.length" />
-        </div>
+        <PlaylistItem :class="{ current: musicDataStore.currentPlaylist.id === item.id }"
+            v-for="item in musicDataStore.playlistList" :key="item.id" :name="item.name" :count="item.songs.length"
+            @click="selectPlaylist(item.id)" />
         <div class="edit-playlist">
             <button @click="editPlaylist"> edit </button>
             <button @click="routePlaylist"> more </button>
@@ -177,174 +176,196 @@ function changeCurrentTime(event: MouseEvent) {
     </div>
 </template>
 
-<style scoped>
-.music-title {
+<style scoped lang="less">
+@fixed-z-index: 999;
+
+@titlebar-fg: white;
+@titlebar-bg: orange;
+@titlebar-height: 50px;
+
+.titlebar {
     display: flex;
     justify-content: center;
     align-items: center;
     position: fixed;
     padding: 5px;
-    z-index: 1;
+    z-index: @fixed-z-index;
     top: 0;
     left: 0;
     right: 0;
     font-size: 24px;
-    height: 50px;
-    color: white;
-    background-color: gray;
+    height: @titlebar-height;
+    color: @titlebar-fg;
+    background-color: @titlebar-bg;
+
+    span {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        margin-left: 15px;
+        margin-right: 15px;
+
+    }
+
+    cursor: default;
 }
 
-.music-title span {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    margin-left: 15px;
-    margin-right: 15px;
-}
+@music-list-additional-margin: 10px;
+@music-list-bg: #fed;
+@music-list-item-fg: #345;
+
+@seleted-item-bg: #cbc;
+@seleted-item-fg: #efe;
 
 .current {
-    background-color: #cccc;
+    background-color: @seleted-item-bg;
+    color: @seleted-item-fg;
 }
 
-.music-list {
-    margin-top: 60px;
-    margin-bottom: 110px;
-}
-
-.music-item {
-    position: relative;
+.music-container {
     display: flex;
-    height: 50px;
-    align-items: center;
-    color: #999
+    flex-direction: column;
+    background-color: @music-list-bg;
+    height: 100vh;
+
+    .music-list {
+        margin-top: @titlebar-height + @music-list-additional-margin;
+        margin-bottom: @playerbar-height + @music-list-additional-margin;
+        color: @music-list-item-fg;
+        overflow-y: auto;
+    }
 }
+
+@playlist-bg: #def;
+@playlist-item-fg: #666;
+@playlist-bottom-margin: 50px;
 
 .playlist {
     position: fixed;
     margin: auto;
-    bottom: 20%;
+    bottom: @playerbar-height + @playlist-bottom-margin;
     left: 0;
     right: 0;
     width: fit-content;
-    background-color: white;
+    background-color: @playlist-bg;
+    color: @playlist-item-fg;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
+
+    .edit-playlist button {
+        color: blue;
+        background-color: transparent;
+        font-size: 16px;
+        font-style: italic;
+        font-weight: bold;
+        border: none;
+        border-radius: 10%;
+        margin: 5px 10px;
+        padding: 2px 5px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: lightblue;
+        }
+
+        &:active {
+            background-color: darkblue;
+            color: white;
+        }
+    }
 }
 
-.playlist-item {
-    box-sizing: border-box;
-    list-style: none;
-    color: #999;
-}
+@playerbar-bg: lightsalmon;
+@playerbar-fg: white;
+@playerbar-height: 100px;
 
-.edit-playlist button {
-    color: blue;
-    background-color: skyblue;
-    font-size: 16px;
-    font-style: italic;
-    font-weight: bold;
-    border-width: 2px;
-    border-color: gray;
-    border-radius: 10%;
-    margin: 5px 10px;
-    padding: 2px 5px;
-    cursor: pointer;
-}
-</style>
-
-<style scoped>
 .player-bar {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 100px;
-    background-color: gray;
-    color: #fff;
+    height: @playerbar-height;
+    background-color: @playerbar-bg;
+    color: @playerbar-fg;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: @fixed-z-index;
     flex-direction: column;
-}
 
-/* 进度条样式    */
-.progress {
-    width: 90%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
+    /* 进度条样式 */
+    .progress {
+        width: 90%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
 
-/* 进度条容器样式 */
-.progress-container {
-    width: 100%;
-    height: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
-    background-color: #ddd;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        /* 进度条容器样式 */
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+            background-color: #77BBFF;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-/* 进度条样式 */
-.progress-bar {
-    height: 100%;
-    background-color: #007BFF;
-    border-radius: 5px;
-    width: 0%;
-}
+        /* 进度条样式 */
+        .progress-bar {
+            height: 100%;
+            background-color: #007BFF;
+            border-radius: 5px;
+            width: 0%;
+        }
+    }
 
-/* 控制按钮样式 */
-.controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 90%;
-    margin-top: 10px;
-}
+    /* 控制按钮样式 */
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 90%;
+        margin-top: 10px;
 
-/* 左侧控制按钮样式 */
-.left-controls {
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    width: 100%;
-}
+        /* 左侧控制按钮样式 */
+        .left-controls {
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            width: 100%;
+        }
 
-/* 右侧控制按钮样式 */
-.right-controls {
-    display: flex;
-    justify-content: right;
-    align-items: center;
-    width: 100%;
-}
+        /* 右侧控制按钮样式 */
+        .right-controls {
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            width: 100%;
+        }
 
-/* 控制按钮样式 */
-.controls button {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-}
+        /* 控制按钮样式 */
+        button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
 
-.controls button img {
-    width: 30px;
-    height: 30px;
-}
+            &:focus {
+                outline: none;
+            }
 
-button:focus {
-    outline: none;
-}
+            &:active {
+                transform: scale(0.9);
+            }
 
-/* 左侧控制按钮样式 */
-.left-controls button {
-    margin: 5px;
-}
-
-/* 右侧控制按钮样式 */
-.right-controls button {
-    margin: 5px;
+            img {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    }
 }
 </style>

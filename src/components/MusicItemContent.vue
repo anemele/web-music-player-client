@@ -26,7 +26,6 @@ defineProps<{ title: string, artist: string, album: string }>()
     overflow: hidden;
     max-width: calc(100% - 80px);
     font-size: 15px;
-    color: #000;
     margin-bottom: 4px
 }
 

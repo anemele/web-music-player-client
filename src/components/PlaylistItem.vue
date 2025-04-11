@@ -15,6 +15,7 @@ defineProps<{ name: string, count: number }>()
     align-items: center;
     padding: 5px;
     border: 1px solid #ccc;
+    box-sizing: border-box;
     border-radius: 5px;
     width: 100%;
     cursor: pointer;

@@ -115,87 +115,60 @@ const selectAllorNone = () => {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import './playlist';
+
 .app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
+    .header {
+        input {
+            width: 60%;
+            margin-left: 10px;
+            margin-right: 10px;
+            padding: 5px 10px;
+            height: 35px;
+            font-size: 20px;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            color: #0d0b53;
+            background-color: #ffffff;
+        }
+    }
 
-.header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: #666;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    z-index: 1;
-    height: 50px;
-}
+    .list-container {
+        >ul {
+            list-style-type: none;
+            padding: 0;
 
-.header input {
-    width: 60%;
-    margin-left: 10px;
-    margin-right: 10px;
-    height: 35px;
-    font-size: 20px;
-    font-family: "Times New Roman", Times, simhei;
-    border-radius: 5px;
-    color: #333;
-    background-color: #ddd;
-}
+            >li {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
 
-.header span {
-    font-size: 20px;
-    font-family: "Times New Roman", Times, simhei;
-    color: #ddd;
-}
+                input[type="checkbox"] {
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    appearance: none;
+                    width: 20px;
+                    height: 20px;
+                    margin-right: 10px;
+                    border: 2px solid #ccc;
+                    border-radius: 4px;
+                    outline: none;
+                    position: relative;
+                    cursor: pointer;
+                }
 
-.list-container {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-    margin-top: 55px;
-    /* 留出头部空间 */
-    margin-bottom: 35px;
-    /* 留出底部空间 */
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-input[type="checkbox"] {
-    margin-right: 10px;
-}
-
-.footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #aaa;
-    color: white;
-    display: flex;
-    justify-content: center;
-    padding: 10px;
-    z-index: 1;
-    height: 30px;
-}
-
-button {
-    margin: 0 10px;
-    padding: 5px 10px;
-    border-radius: 30%;
-    cursor: pointer;
+                input[type="checkbox"]:checked::before {
+                    content: '\2713';
+                    color: blue;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+            }
+        }
+    }
 }
 </style>

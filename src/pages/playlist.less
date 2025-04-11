@@ -1,0 +1,66 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: rgb(221, 237, 247);
+
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: #80bbef;
+        text-align: center;
+        padding: 10px;
+        z-index: 1;
+        height: 50px;
+
+        span {
+            font-size: 20px;
+            color: #201010;
+        }
+    }
+
+    .list-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+        /* 留出头部空间 */
+        margin-top: 55px;
+        /* 留出底部空间 */
+        margin-bottom: 35px;
+
+    }
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #6facdd;
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+        z-index: 1;
+        height: 30px;
+
+        button {
+            margin: 0 10px;
+            padding: 5px 10px;
+            border-radius: 30%;
+            border: none;
+            cursor: pointer;
+
+            background-color: rgb(213, 242, 252);
+            font-weight: bold;
+
+            &:disabled {
+                cursor: not-allowed;
+            }
+
+            &:hover {
+                background-color: rgb(174, 228, 246);
+            }
+        }
+    }
+}

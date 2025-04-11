@@ -53,63 +53,49 @@ function removePlaylist() {
 </script>
 
 <template>
-    <div class="list-container">
-        <ul>
-            <li class="music-item" v-for="item in musicDataStore.playlistList.slice(1)" :key="item.id"
-                @click="selectPlaylist(item.id)">
-                <PlaylistItem :name="item.name" :count="item.songs.length" :class="{ current: activeID === item.id }" />
-            </li>
-        </ul>
+    <div class="app-container">
+        <header class="header">
+            <span> {{ activeID === -1 ? '' : musicDataStore.playlistList[activeID].name }}</span>
+        </header>
+        <div class="list-container">
+            <PlaylistItem class="playlist-item" :class="{ current: activeID === item.id }"
+                v-for="item in musicDataStore.playlistList.slice(1)" :key="item.id" :name="item.name"
+                :count="item.songs.length" @click="selectPlaylist(item.id)" />
+        </div>
+        <footer class="footer">
+            <button @click="createPlaylist">新建</button>
+            <button @click="removePlaylist">删除</button>
+        </footer>
     </div>
-    <footer class="footer">
-        <button @click="createPlaylist">新建</button>
-        <button @click="removePlaylist">删除</button>
-    </footer>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import './playlist';
+
 .current {
-    background-color: #cccc;
+    background-color: #c4e5e4;
+    color: #1d879c;
 }
 
-.music-item {
-    position: relative;
-    display: flex;
-    height: 50px;
-}
+.app-container {
 
-.list-container {
-    margin-bottom: 30px;
-}
+    .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-ul {
-    list-style-type: none;
-    padding: 0;
-}
+    .list-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
 
-li {
-    display: flex;
-    align-items: center;
-}
-
-.footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #aaa;
-    color: white;
-    display: flex;
-    justify-content: center;
-    padding: 10px;
-    z-index: 1;
-    height: 30px;
-}
-
-button {
-    margin: 0 10px;
-    padding: 5px 10px;
-    border-radius: 30%;
-    cursor: pointer;
+        .playlist-item {
+            margin: 10px;
+            padding: 10px;
+            border-color: rgb(152, 62, 155);
+        }
+    }
 }
 </style>

@@ -31,7 +31,7 @@ export const usePlayerStore = defineStore("player", () => {
         title: "标题",
         artist: "歌手",
         album: "专辑",
-        duration: 61,
+        duration: 0,
     })
 
     return {
