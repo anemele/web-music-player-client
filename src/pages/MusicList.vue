@@ -1,28 +1,16 @@
 <script lang="ts" setup>
 import type { MusicInter } from '@/api';
 import MusicItem from '@/components/MusicItem.vue';
-import PlaylistItem from '@/components/PlaylistItem.vue';
+import PlaylistPopup from '@/components/PlaylistPopup.vue';
 import { useMusicDataStore } from "@/store/musicdata";
 import { usePlayerStore } from "@/store/player";
 import { PlayMode, usePlayerbarStore } from "@/store/playerbar";
 import { convertSecondToTime, joinTitleAndArtist } from "@/tools";
-import { useRouter } from "vue-router";
 
 const musicDataStore = useMusicDataStore();
 const playerbarStore = usePlayerbarStore();
 const playerStore = usePlayerStore();
 
-function selectPlaylist(id: number) {
-    if (musicDataStore.currentPlaylist.id === id) { return }
-    const playlist = musicDataStore.playlistMap.get(id);
-    if (playlist === undefined) {
-        Object.assign(musicDataStore.currentPlaylist, musicDataStore.playlistList[0]);
-    } else {
-        Object.assign(musicDataStore.currentPlaylist, playlist);
-    }
-    musicDataStore.updateCurrentMusicList();
-    musicDataStore.updateCurrentMusicMap();
-}
 
 function selectMusic(music: MusicInter) {
     if (playerStore.currentMusic.id === music.id) { return }
@@ -81,21 +69,6 @@ playerStore.player.onended = () => {
     changeMusic(true)
 }
 
-const router = useRouter()
-
-function editPlaylist() {
-    if (musicDataStore.currentPlaylist.id === 0) {
-        console.log('默认歌单不能编辑');
-        alert('默认歌单不能编辑');
-        return;
-    }
-    router.push({ path: '/playlist/edit' })
-}
-
-function routePlaylist() {
-    router.push({ path: '/playlist' })
-}
-
 function changeCurrentTime(event: MouseEvent) {
     // 用选择器获取目标，不要用 event ，因为 event 可能是冒泡事件
     const progressContrainer = document.querySelector('.progress-container')
@@ -127,15 +100,7 @@ function changeCurrentTime(event: MouseEvent) {
         </div>
     </div>
 
-    <div v-show="playerbarStore.playlistShow" class="playlist">
-        <PlaylistItem :class="{ current: musicDataStore.currentPlaylist.id === item.id }"
-            v-for="item in musicDataStore.playlistList" :key="item.id" :name="item.name" :count="item.songs.length"
-            @click="selectPlaylist(item.id)" />
-        <div class="edit-playlist">
-            <button @click="editPlaylist"> edit </button>
-            <button @click="routePlaylist"> more </button>
-        </div>
-    </div>
+    <PlaylistPopup class="playlistpopup" v-show="playerbarStore.playlistShow" />
 
     <div class="player-bar">
         <div class="progress">
@@ -179,8 +144,9 @@ function changeCurrentTime(event: MouseEvent) {
 <style scoped lang="less">
 @fixed-z-index: 999;
 
+@main-bg-color: lightsalmon;
 @titlebar-fg: white;
-@titlebar-bg: orange;
+@titlebar-bg: @main-bg-color;
 @titlebar-height: 50px;
 
 .titlebar {
@@ -210,17 +176,17 @@ function changeCurrentTime(event: MouseEvent) {
     cursor: default;
 }
 
-@music-list-additional-margin: 10px;
-@music-list-bg: #fed;
-@music-list-item-fg: #345;
-
-@seleted-item-bg: #cbc;
-@seleted-item-fg: #efe;
+@seleted-item-bg: #dcb;
+@seleted-item-fg: #89a;
 
 .current {
     background-color: @seleted-item-bg;
     color: @seleted-item-fg;
 }
+
+@music-list-additional-margin: 10px;
+@music-list-bg: #fed;
+@music-list-item-fg: #345;
 
 .music-container {
     display: flex;
@@ -236,48 +202,16 @@ function changeCurrentTime(event: MouseEvent) {
     }
 }
 
-@playlist-bg: #def;
-@playlist-item-fg: #666;
-@playlist-bottom-margin: 50px;
-
-.playlist {
+.playlistpopup {
     position: fixed;
+    align-items: center;
     margin: auto;
-    bottom: @playerbar-height + @playlist-bottom-margin;
     left: 0;
     right: 0;
-    width: fit-content;
-    background-color: @playlist-bg;
-    color: @playlist-item-fg;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    .edit-playlist button {
-        color: blue;
-        background-color: transparent;
-        font-size: 16px;
-        font-style: italic;
-        font-weight: bold;
-        border: none;
-        border-radius: 10%;
-        margin: 5px 10px;
-        padding: 2px 5px;
-        cursor: pointer;
-
-        &:hover {
-            background-color: lightblue;
-        }
-
-        &:active {
-            background-color: darkblue;
-            color: white;
-        }
-    }
+    bottom: 25%;
 }
 
-@playerbar-bg: lightsalmon;
+@playerbar-bg: @main-bg-color;
 @playerbar-fg: white;
 @playerbar-height: 100px;
 
@@ -308,7 +242,7 @@ function changeCurrentTime(event: MouseEvent) {
             height: 10px;
             margin-left: 10px;
             margin-right: 10px;
-            background-color: #77BBFF;
+            background-color: #afd3f7;
             border-radius: 5px;
             cursor: pointer;
         }
@@ -316,7 +250,7 @@ function changeCurrentTime(event: MouseEvent) {
         /* 进度条样式 */
         .progress-bar {
             height: 100%;
-            background-color: #007BFF;
+            background-color: #4098f7;
             border-radius: 5px;
             width: 0%;
         }

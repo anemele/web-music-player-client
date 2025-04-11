@@ -13,8 +13,7 @@ defineProps<{ name: string, count: number }>()
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-    padding: 5px;
-    border: 1px solid #ccc;
+    padding: 8px 10px;
     box-sizing: border-box;
     border-radius: 5px;
     width: 100%;
@@ -23,6 +22,6 @@ defineProps<{ name: string, count: number }>()
 
 .name {
     font-weight: bold;
-    margin-right: 10px;
+    margin-right: 15px;
 }
 </style>
