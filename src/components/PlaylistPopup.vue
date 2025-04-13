@@ -13,8 +13,7 @@ function selectPlaylist(id: number) {
     } else {
         Object.assign(musicDataStore.currentPlaylist, playlist);
     }
-    musicDataStore.updateCurrentMusicList();
-    musicDataStore.updateCurrentMusicMap();
+    musicDataStore.updateCurrentMusic();
 }
 
 const router = useRouter()
@@ -25,6 +24,7 @@ function editPlaylist() {
         alert('默认歌单不能编辑');
         return;
     }
+    musicDataStore.selectedPlaylistId = musicDataStore.currentPlaylist.id;
     router.push({ path: '/playlist/edit' })
 }
 

@@ -10,7 +10,6 @@ defineProps<{ item: MusicInter, index: number }>()
     <div class="music-item">
         <div class="index">
             <span>{{ index + 1 }}</span>
-            <i></i>
         </div>
         <MusicItemContent :title="item.title" :artist="item.artist" :album="item.album" />
         <div class="duration">{{ convertSecondToTime(item.duration) }}</div>
@@ -25,21 +24,11 @@ defineProps<{ item: MusicInter, index: number }>()
     display: flex;
     height: @height;
     align-items: center;
-    cursor: default;
 
     .index {
         width: @height;
         font-size: 16px;
         text-align: center;
-
-        >i {
-            position: absolute;
-            top: 0;
-            left: 12px;
-            font-size: 20px;
-            line-height: @height;
-            color: red;
-        }
     }
 
     .duration {

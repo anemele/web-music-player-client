@@ -80,8 +80,6 @@ const playerStore = usePlayerStore();
             margin-right: 15px;
 
         }
-
-        cursor: default;
     }
 
     .music-list {

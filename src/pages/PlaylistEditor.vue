@@ -6,6 +6,7 @@ import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const musicDataStore = useMusicDataStore();
+
 const musicList = reactive<MusicInter[]>([]);
 // 此处使用 ref
 const selectedItems = ref(new Set<number>());
@@ -14,11 +15,16 @@ const playlistName = ref('')
 const disabled = ref(true)
 
 function getPlaylist(): PlaylistInter | null {
-    if (musicDataStore.currentPlaylist.id === 0) {
+    const id = musicDataStore.selectedPlaylistId
+    if (id === 0) {
         console.log('默认歌单不能编辑')
         return null
     }
-    const playlist = musicDataStore.currentPlaylist
+    const playlist = musicDataStore.playlistMap.get(id)
+    if (playlist === undefined) {
+        console.log('歌单不存在')
+        return null
+    }
 
     playlistName.value = playlist.name
     playlist.songs.forEach((id) => {
@@ -67,6 +73,12 @@ const submitSelection = () => {
                 console.log('更新歌单:', msg);
                 item.name = newPlaylist.name;
                 item.songs = newPlaylist.songs;
+
+                if (musicDataStore.currentPlaylist.id === playlist.id) {
+                    musicDataStore.currentPlaylist.songs = newPlaylist.songs;
+                    musicDataStore.updateCurrentMusic();
+                }
+
                 alert('更新成功：' + msg);
                 break;
             }

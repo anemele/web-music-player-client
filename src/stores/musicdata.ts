@@ -1,6 +1,6 @@
 import { getMusicList, getPlaylistList, type MusicInter, type PlaylistInter } from "@/api";
 import { defineStore } from "pinia";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 export const useMusicDataStore = defineStore("musicdata", () => {
     const playlistMap = new Map<number, PlaylistInter>();
@@ -13,22 +13,19 @@ export const useMusicDataStore = defineStore("musicdata", () => {
         name: '',
         songs: [],
     });
+    const selectedPlaylistId = ref(-1);
     const currentMusicList = reactive<MusicInter[]>([]);
-    function updateCurrentMusicList() {
+    const currentMusicMap = new Map<number, number>()
+    function updateCurrentMusic() {
         currentMusicList.length = 0;
-        currentPlaylist.songs.forEach((id: number) => {
+        currentMusicMap.clear()
+        currentPlaylist.songs.forEach((id: number, index: number) => {
             const music = musicMap.get(id);
             if (music === undefined) {
                 // should never happen
                 return;
             }
             currentMusicList.push(music)
-        })
-    }
-    const currentMusicMap = new Map<number, number>()
-    function updateCurrentMusicMap() {
-        currentMusicMap.clear()
-        currentPlaylist.songs.forEach((id: number, index: number) => {
             currentMusicMap.set(id, index)
         })
     }
@@ -54,8 +51,7 @@ export const useMusicDataStore = defineStore("musicdata", () => {
         playlistList.push(defaultPlaylist)
 
         Object.assign(currentPlaylist, defaultPlaylist)
-        updateCurrentMusicList()
-        updateCurrentMusicMap()
+        updateCurrentMusic()
 
         // 获取全部播放列表
         res = await getPlaylistList();
@@ -82,11 +78,10 @@ export const useMusicDataStore = defineStore("musicdata", () => {
         musicMap,
 
         currentPlaylist,
+        selectedPlaylistId,
         currentMusicList,
-        updateCurrentMusicList,
         currentMusicMap,
-        updateCurrentMusicMap,
-
-        randMusic: randMusic,
+        updateCurrentMusic,
+        randMusic,
     }
 })

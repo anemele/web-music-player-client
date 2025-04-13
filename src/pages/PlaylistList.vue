@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { deletePlaylist, postPlaylist } from '@/api';
+import { deletePlaylist, postPlaylist, type PlaylistInter } from '@/api';
 import PlaylistItem from '@/components/PlaylistItem.vue';
 import { useMusicDataStore } from '@/stores/musicdata';
 import { ref } from 'vue';
@@ -15,11 +15,10 @@ function selectPlaylist(id: number) {
         return
     }
 
-    const playlist = musicDataStore.playlistMap.get(id);
-    if (playlist === undefined) { return }
-
-    Object.assign(musicDataStore.currentPlaylist, playlist);
-    router.push({ path: '/playlist/edit' })
+    if (musicDataStore.playlistMap.has(id)) {
+        musicDataStore.selectedPlaylistId = id;
+        router.push({ path: '/playlist/edit' })
+    }
 }
 
 function createPlaylist() {
@@ -27,12 +26,16 @@ function createPlaylist() {
     if (!name) { return }
 
     // 这里默认选择第一首歌，因为传空列表后端会报错 400 bad request
-    const playlist = { name, songs: [0] }
-    postPlaylist(playlist).then((res) => {
+    const data = { name, songs: [0] }
+    postPlaylist(data).then((res) => {
         console.log(res.data)
-        musicDataStore.playlistList.push(res.data)
-        musicDataStore.currentPlaylist = res.data
+        const playlist = res.data as PlaylistInter;
+        musicDataStore.playlistList.push(playlist);
+        musicDataStore.selectedPlaylistId = playlist.id;
         router.push({ path: '/playlist/edit' })
+    }).catch((err) => {
+        alert('创建歌单失败')
+        console.log(err)
     })
 }
 
