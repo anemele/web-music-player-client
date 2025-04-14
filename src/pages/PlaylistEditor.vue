@@ -53,12 +53,8 @@ function toggleSelection(id: number) {
 const router = useRouter()
 
 const submitSelection = () => {
-    // console.log('提交选中的项目:', selectedItems.value);
+    console.log('提交选中的项目:', selectedItems.value);
     if (playlist === null) { return }
-    if (selectedItems.value.size === 0) {
-        alert('请选择至少一首歌曲');
-        return;
-    }
 
     const newPlaylist: PlaylistInter = {
         id: playlist.id,
@@ -73,26 +69,23 @@ const submitSelection = () => {
     })
 
     putPlaylist(newPlaylist).then((res) => {
-        for (const item of musicDataStore.playlists.arrayData) {
-            if (item.id === playlist.id) {
-                const msg = `${item.name} (${item.songs.length}) -> ${newPlaylist.name} (${newPlaylist.songs.length})`;
-                console.log('更新歌单:', msg);
-                item.name = newPlaylist.name;
-                item.songs = newPlaylist.songs;
+        const item = musicDataStore.playlists.getmap(playlist.id);
+        if (item !== undefined) {
+            const msg = `${item.name} (${item.songs.length}) -> ${newPlaylist.name} (${newPlaylist.songs.length})`;
+            console.log('更新歌单:', msg);
+            Object.assign(item, newPlaylist);
 
-                if (musicDataStore.currentPlaylist.id === playlist.id) {
-                    musicDataStore.currentPlaylist.songs = newPlaylist.songs;
-                    musicDataStore.currentMusiclist.update(newPlaylist.songs);
-                }
-
-                alert('更新成功：' + msg);
-                break;
+            if (musicDataStore.currentPlaylist.id === playlist.id) {
+                musicDataStore.currentPlaylist.songs = newPlaylist.songs;
+                musicDataStore.currentMusiclist.update(newPlaylist.songs);
             }
+            alert('更新成功：' + msg);
         }
 
         setTimeout(router.back, 1000)
     }).catch((err) => {
-        console.log('更新歌单失败:', err);
+        alert('更新失败')
+        console.log('更新失败:', err);
     })
 };
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { deletePlaylist, postPlaylist, type BasePlaylistInter, type PlaylistInter } from '@/api';
+import { deletePlaylist, postPlaylist, type BasePlaylistInter } from '@/api';
 import PlaylistItem from '@/components/PlaylistItem.vue';
 import { useMusicDataStore } from '@/stores/musicdata';
 import { ref } from 'vue';
@@ -18,6 +18,8 @@ function selectPlaylist(id: number) {
     if (musicDataStore.playlists.has(id)) {
         musicDataStore.selectedPlaylistId = id;
         router.push({ path: '/playlist/edit' })
+    } else {
+        console.log('no playlist with id:', id)
     }
 }
 
@@ -30,6 +32,7 @@ function createPlaylist() {
         console.log(res.data)
         const playlist = { id: res.data.id, ...data };
         musicDataStore.playlists.push(playlist);
+        activeID.value = playlist.id;
     }).catch((err) => {
         alert('创建歌单失败')
         console.log(err)
