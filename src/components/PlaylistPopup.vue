@@ -7,13 +7,11 @@ const musicDataStore = useMusicDataStore()
 
 function selectPlaylist(id: number) {
     if (musicDataStore.currentPlaylist.id === id) { return }
-    const playlist = musicDataStore.playlistMap.get(id);
-    if (playlist === undefined) {
-        Object.assign(musicDataStore.currentPlaylist, musicDataStore.playlistList[0]);
-    } else {
+    const playlist = musicDataStore.playlists.getmap(id);
+    if (playlist !== undefined) {
         Object.assign(musicDataStore.currentPlaylist, playlist);
+        musicDataStore.currentMusiclist.update(playlist.songs);
     }
-    musicDataStore.updateCurrentMusic();
 }
 
 const router = useRouter()
@@ -37,8 +35,8 @@ function routePlaylist() {
     <div class="main">
         <div class="playlist">
             <PlaylistItem :class="{ current: musicDataStore.currentPlaylist.id === item.id }"
-                v-for="item in musicDataStore.playlistList" :key="item.id" :name="item.name" :count="item.songs.length"
-                @click="selectPlaylist(item.id)" />
+                v-for="item in musicDataStore.playlists.arrayData" :key="item.id" :name="item.name"
+                :count="item.songs.length" @click="selectPlaylist(item.id)" />
         </div>
         <div class="button">
             <button @click="editPlaylist"> edit </button>

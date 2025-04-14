@@ -12,12 +12,12 @@ function changeMusic(next: boolean = true) {
     function inner() {
         switch (playerbarStore.playMode) {
             case PlayMode.RANDOM:
-                if (musicDataStore.currentMusicList.length === 1) {
+                if (musicDataStore.currentMusiclist.length === 1) {
                     playerStore.reloadMusic()
                 } else {
                     while (true) {
-                        const music = musicDataStore.randMusic()
-                        if (music.id !== playerStore.currentMusic.id) {
+                        const music = musicDataStore.currentMusiclist.random()
+                        if (music !== undefined && music.id !== playerStore.currentMusic.id) {
                             playerStore.selectMusic(music)
                             break;
                         }
@@ -28,21 +28,13 @@ function changeMusic(next: boolean = true) {
                 playerStore.reloadMusic()
                 break;
             case PlayMode.LIST_LOOP:
-                if (musicDataStore.currentMusicList.length === 1) {
+                if (musicDataStore.currentMusiclist.length === 1) {
                     playerStore.reloadMusic()
                 }
-                let idx = musicDataStore.currentMusicMap.get(playerStore.currentMusic.id);
-                if (idx === undefined) {
-                    idx = 0;
-                } else if (next) {
-                    idx++;
-                    idx %= musicDataStore.currentMusicList.length
-                } else {
-                    idx += musicDataStore.currentMusicList.length - 1;
-                    idx %= musicDataStore.currentMusicList.length
+                const music = musicDataStore.currentMusiclist.nextof(playerStore.currentMusic, next)
+                if (music !== undefined) {
+                    playerStore.selectMusic(music)
                 }
-                const music = musicDataStore.currentMusicList[idx]
-                playerStore.selectMusic(music)
                 break;
             default:
                 // should never happen

@@ -20,20 +20,20 @@ function getPlaylist(): PlaylistInter | null {
         console.log('默认歌单不能编辑')
         return null
     }
-    const playlist = musicDataStore.playlistMap.get(id)
+    const playlist = musicDataStore.playlists.getmap(id)
     if (playlist === undefined) {
         console.log('歌单不存在')
         return null
     }
 
     playlistName.value = playlist.name
-    playlist.songs.forEach((id) => {
-        selectedItems.value.add(id)
-        musicList.push(musicDataStore.musicMap.get(id) as MusicInter)
+    playlist.songs.forEach((item) => {
+        selectedItems.value.add(item.id)
+        musicList.push(item)
     })
-    musicDataStore.playlistList[0].songs.forEach((id) => {
-        if (selectedItems.value.has(id)) { return }
-        musicList.push(musicDataStore.musicMap.get(id) as MusicInter)
+    musicDataStore.musiclist.arrayData.forEach((item) => {
+        if (selectedItems.value.has(item.id)) { return }
+        musicList.push(item)
     })
     disabled.value = false
 
@@ -60,14 +60,20 @@ const submitSelection = () => {
         return;
     }
 
-    const newPlaylist = {
+    const newPlaylist: PlaylistInter = {
         id: playlist.id,
         name: playlistName.value,
-        songs: Array.from(selectedItems.value).sort()
+        songs: []
     };
+    selectedItems.value.forEach((id) => {
+        const music = musicDataStore.musiclist.getmap(id)
+        if (music !== undefined) {
+            newPlaylist.songs.push(music)
+        }
+    })
 
     putPlaylist(newPlaylist).then((res) => {
-        for (const item of musicDataStore.playlistList) {
+        for (const item of musicDataStore.playlists.arrayData) {
             if (item.id === playlist.id) {
                 const msg = `${item.name} (${item.songs.length}) -> ${newPlaylist.name} (${newPlaylist.songs.length})`;
                 console.log('更新歌单:', msg);
@@ -76,7 +82,7 @@ const submitSelection = () => {
 
                 if (musicDataStore.currentPlaylist.id === playlist.id) {
                     musicDataStore.currentPlaylist.songs = newPlaylist.songs;
-                    musicDataStore.updateCurrentMusic();
+                    musicDataStore.currentMusiclist.update(newPlaylist.songs);
                 }
 
                 alert('更新成功：' + msg);

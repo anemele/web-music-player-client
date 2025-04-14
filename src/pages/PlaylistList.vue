@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { deletePlaylist, postPlaylist, type PlaylistInter } from '@/api';
+import { deletePlaylist, postPlaylist, type BasePlaylistInter, type PlaylistInter } from '@/api';
 import PlaylistItem from '@/components/PlaylistItem.vue';
 import { useMusicDataStore } from '@/stores/musicdata';
 import { ref } from 'vue';
@@ -15,7 +15,7 @@ function selectPlaylist(id: number) {
         return
     }
 
-    if (musicDataStore.playlistMap.has(id)) {
+    if (musicDataStore.playlists.has(id)) {
         musicDataStore.selectedPlaylistId = id;
         router.push({ path: '/playlist/edit' })
     }
@@ -25,14 +25,11 @@ function createPlaylist() {
     const name = prompt('请输入歌单名称：')?.trim();
     if (!name) { return }
 
-    // 这里默认选择第一首歌，因为传空列表后端会报错 400 bad request
-    const data = { name, songs: [0] }
+    const data: BasePlaylistInter = { name, songs: [] }
     postPlaylist(data).then((res) => {
         console.log(res.data)
-        const playlist = res.data as PlaylistInter;
-        musicDataStore.playlistList.push(playlist);
-        musicDataStore.selectedPlaylistId = playlist.id;
-        router.push({ path: '/playlist/edit' })
+        const playlist = { id: res.data.id, ...data };
+        musicDataStore.playlists.push(playlist);
     }).catch((err) => {
         alert('创建歌单失败')
         console.log(err)
@@ -40,16 +37,16 @@ function createPlaylist() {
 }
 
 function removePlaylist() {
-    const playlist = musicDataStore.playlistList[activeID.value]
-    if (!playlist) {
+    const playlist = musicDataStore.playlists.getmap(activeID.value)
+    if (playlist === undefined) {
         console.log('no playlist selected')
         return
     }
 
-    if (!confirm('是否删除歌单：' + playlist.name)) { return }
+    if (!confirm('是否删除歌单：' + playlist.name + ' (' + playlist.songs.length + ')')) { return }
 
     deletePlaylist(playlist.id).then((res) => {
-        musicDataStore.playlistList.splice(activeID.value, 1)
+        musicDataStore.playlists.delete(activeID.value)
         activeID.value = -1
     })
 }
@@ -58,11 +55,11 @@ function removePlaylist() {
 <template>
     <div class="app-container">
         <header class="header">
-            <span> {{ musicDataStore.playlistList[activeID]?.name }}</span>
+            <span> {{ musicDataStore.playlists.getmap(activeID)?.name }}</span>
         </header>
         <div class="list-container">
             <PlaylistItem class="playlist-item" :class="{ current: activeID === item.id }"
-                v-for="item in musicDataStore.playlistList.slice(1)" :key="item.id" :name="item.name"
+                v-for="item in musicDataStore.playlists.arrayData.slice(1)" :key="item.id" :name="item.name"
                 :count="item.songs.length" @click="selectPlaylist(item.id)" />
         </div>
         <footer class="footer">

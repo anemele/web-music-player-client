@@ -1,34 +1,67 @@
 import { getMusicList, getPlaylistList, type MusicInter, type PlaylistInter } from "@/api";
+import { MapArray } from "@/tools";
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 
+class CurrentMusicList {
+    private ma: MapArray<MusicInter>;
+
+    constructor() {
+        this.ma = new MapArray();
+    }
+
+    get length() {
+        return this.ma.length;
+    }
+
+    get arrayData() {
+        return this.ma.arrayData;
+    }
+
+    update(musiclist: MusicInter[]) {
+        this.ma.clear();
+        musiclist.forEach((item: MusicInter) => {
+            this.ma.push(item);
+        })
+    }
+
+    random(): MusicInter | undefined {
+        if (this.length === 0) {
+            return undefined;
+        }
+        const idx = Math.floor(Math.random() * this.length)
+        return this.ma.getarr(idx);
+    }
+
+    nextof(music: MusicInter, forward: boolean = true): MusicInter | undefined {
+        if (this.length === 0) {
+            return undefined;
+        }
+        let idx = this.ma.index(music.id);
+        if (idx === -1) {
+            return undefined;
+        }
+        if (forward) {
+            idx = (idx + 1) % this.ma.length;
+        } else {
+            idx = (idx - 1 + this.ma.length) % this.ma.length;
+        }
+        return this.ma.getarr(idx);
+    }
+}
+
 export const useMusicDataStore = defineStore("musicdata", () => {
-    const playlistMap = new Map<number, PlaylistInter>();
-    const playlistList = reactive<PlaylistInter[]>([]);
-    const musicMap = new Map<number, MusicInter>();
-    const musicList = reactive<number[]>([]);
+    const playlists = reactive<MapArray<PlaylistInter>>(new MapArray());
+    const musiclist = reactive<MapArray<MusicInter>>(new MapArray());
 
     const currentPlaylist = reactive<PlaylistInter>({
         id: 0,
         name: '',
         songs: [],
     });
+    const currentMusiclist = reactive<CurrentMusicList>(new CurrentMusicList());
+
     const selectedPlaylistId = ref(-1);
-    const currentMusicList = reactive<MusicInter[]>([]);
-    const currentMusicMap = new Map<number, number>()
-    function updateCurrentMusic() {
-        currentMusicList.length = 0;
-        currentMusicMap.clear()
-        currentPlaylist.songs.forEach((id: number, index: number) => {
-            const music = musicMap.get(id);
-            if (music === undefined) {
-                // should never happen
-                return;
-            }
-            currentMusicList.push(music)
-            currentMusicMap.set(id, index)
-        })
-    }
 
     async function init() {
         // 获取全部音乐数据
@@ -39,49 +72,49 @@ export const useMusicDataStore = defineStore("musicdata", () => {
         }
 
         res.data.forEach((item: MusicInter) => {
-            musicMap.set(item.id, item)
-            musicList.push(item.id)
+            musiclist.push(item)
         });
         const defaultPlaylist = {
             id: 0,
             name: '[Default]',
-            songs: musicList,
+            songs: musiclist.arrayData,
         }
-        playlistMap.set(defaultPlaylist.id, defaultPlaylist)
-        playlistList.push(defaultPlaylist)
+        playlists.push(defaultPlaylist)
 
         Object.assign(currentPlaylist, defaultPlaylist)
-        updateCurrentMusic()
+        currentMusiclist.update(defaultPlaylist.songs)
 
         // 获取全部播放列表
         res = await getPlaylistList();
         if (!res.data) {
             return;
         }
-        res.data.forEach((item: PlaylistInter) => {
-            playlistMap.set(item.id, item);
-            playlistList.push(item);
+        const playlistsData: { id: number, name: string, songs: number[] }[] = res.data;
+        playlistsData.forEach((item) => {
+            const playlist: PlaylistInter = {
+                id: item.id,
+                name: item.name,
+                songs: [],
+            }
+            item.songs.forEach((id: number) => {
+                const music = musiclist.getmap(id);
+                if (music) {
+                    playlist.songs.push(music);
+                }
+            })
+            playlists.push(playlist);
         });
     }
 
     setTimeout(init, 100)
 
-    function randMusic() {
-        const idx = Math.floor(Math.random() * currentMusicList.length)
-        return currentMusicList[idx]
-    }
-
     return {
-        playlistList,
-        playlistMap,
-        musicList,
-        musicMap,
+        playlists,
+        musiclist,
 
         currentPlaylist,
+        currentMusiclist,
+
         selectedPlaylistId,
-        currentMusicList,
-        currentMusicMap,
-        updateCurrentMusic,
-        randMusic,
     }
 })

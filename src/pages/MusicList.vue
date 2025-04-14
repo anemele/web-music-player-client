@@ -21,8 +21,8 @@ const playerStore = usePlayerStore();
 
         <div class="music-list">
             <MusicItem :class="{ current: playerStore.currentMusic.id === item.id }"
-                v-for="(item, index) in musicDataStore.currentMusicList" :key="item.id" :item="item" :index="index"
-                @click="playerStore.selectMusic(item)" />
+                v-for="(item, index) in musicDataStore.currentMusiclist.arrayData" :key="item.id" :item="item"
+                :index="index" @click="playerStore.selectMusic(item)" />
         </div>
 
         <PlayerBar class="playerbar" />

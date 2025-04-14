@@ -1,31 +1,40 @@
+import { type HasID } from "@/types";
 import axios from "axios";
 
 const baseURL = "/api";
 
 const request = axios.create({ baseURL });
 
-export interface PlaylistInter {
-  id: number;
+export interface BaseMusicInter {
+  title: string;
+  artist: string;
+  album: string;
+  duration: number;
+};
+export interface MusicInter extends BaseMusicInter, HasID { };
+
+export interface BasePlaylistInter {
   name: string;
-  songs: number[];
-}
+  songs: MusicInter[];
+};
+export interface PlaylistInter extends BasePlaylistInter, HasID { };
 
 export function getPlaylist(id: number) {
   return request.get("/list/" + id + "/");
 }
 
 // POST does not need `id`
-export function postPlaylist(data: { name: string; songs: number[] }) {
+export function postPlaylist(data: BasePlaylistInter) {
   return request.post("/list/", {
     name: data.name,
-    songs: data.songs,
+    songs: data.songs.map((item) => item.id),
   });
 }
 
 export function putPlaylist(data: PlaylistInter) {
   return request.put("/list/" + data.id + "/", {
     name: data.name,
-    songs: data.songs,
+    songs: data.songs.map((item) => item.id),
   });
 }
 
@@ -35,14 +44,6 @@ export function deletePlaylist(id: number) {
 
 export function getPlaylistList() {
   return request.get("/list/");
-}
-
-export interface MusicInter {
-  id: number;
-  title: string;
-  artist: string;
-  album: string;
-  duration: number;
 }
 
 export function getMusic(id: number) {
