@@ -81,10 +81,13 @@ export const useMusicDataStore = defineStore("musicdata", () => {
         res.data.forEach((item: MusicInter) => {
             musiclist.push(item)
         });
+
+        // 此处由 AI 生成，应该是按照 Unicode 顺序排序？
+        const collator = new Intl.Collator("en-US", { sensitivity: "base" });
         musiclist.arrayData.sort((a, b) => {
-            if (a.artist !== b.artist) return a.artist.localeCompare(b.artist)
-            if (a.title !== b.title) return a.title.localeCompare(b.title)
-            if (a.album !== b.album) return a.album.localeCompare(b.album)
+            if (a.artist !== b.artist) return collator.compare(a.artist, b.artist)
+            if (a.title !== b.title) return collator.compare(a.title, b.title)
+            if (a.album !== b.album) return collator.compare(a.album, b.album)
             return a.id - b.id
         })
 
