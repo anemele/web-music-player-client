@@ -32,9 +32,9 @@ export const usePlayerStore = defineStore("player", () => {
 
     const currentMusic = reactive<MusicInter>({
         id: 0,
-        title: "",
-        artist: "",
-        album: "",
+        title: "标题",
+        artist: "歌手",
+        album: "专辑",
         duration: 0,
     })
 

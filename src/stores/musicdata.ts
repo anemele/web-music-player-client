@@ -54,6 +54,13 @@ export const useMusicDataStore = defineStore("musicdata", () => {
     const playlists = reactive<MapArray<PlaylistInter>>(new MapArray());
     const musiclist = reactive<MapArray<MusicInter>>(new MapArray());
 
+    const defaultPlaylist: PlaylistInter = {
+        id: 0,
+        name: '[Default]',
+        songs: [],
+    }
+    playlists.push(defaultPlaylist)
+
     const currentPlaylist = reactive<PlaylistInter>({
         id: 0,
         name: '',
@@ -74,12 +81,14 @@ export const useMusicDataStore = defineStore("musicdata", () => {
         res.data.forEach((item: MusicInter) => {
             musiclist.push(item)
         });
-        const defaultPlaylist = {
-            id: 0,
-            name: '[Default]',
-            songs: musiclist.arrayData,
-        }
-        playlists.push(defaultPlaylist)
+        musiclist.arrayData.sort((a, b) => {
+            if (a.artist !== b.artist) return a.artist.localeCompare(b.artist)
+            if (a.title !== b.title) return a.title.localeCompare(b.title)
+            if (a.album !== b.album) return a.album.localeCompare(b.album)
+            return a.id - b.id
+        })
+
+        defaultPlaylist.songs = musiclist.arrayData;
 
         Object.assign(currentPlaylist, defaultPlaylist)
         currentMusiclist.update(defaultPlaylist.songs)
