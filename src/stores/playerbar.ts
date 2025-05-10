@@ -18,8 +18,18 @@ const playModeIndex = ref(0);
 export const usePlayerbarStore = defineStore('playerbar', () => {
     const playlistShow = ref(false)
 
+    let toggleShowTimer: number | undefined = undefined;
+
     function toggleShow() {
+        if (toggleShowTimer !== null) {
+            clearTimeout(toggleShowTimer);
+        }
         playlistShow.value = !playlistShow.value;
+        if (playlistShow.value) {
+            toggleShowTimer = setTimeout(() => {
+                playlistShow.value = false;
+            }, 10000); // 10秒后隐藏
+        }
     }
 
     const playMode = ref(PlayMode.RANDOM)
